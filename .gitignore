@@ -1,0 +1,9 @@
+# dependencies
+node_modules/
+
+# database
+*.db
+*.db-*
+
+# macos
+.DS_Store
