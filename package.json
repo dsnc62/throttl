@@ -1,6 +1,15 @@
 {
-  "name": "dealership",
-  "version": "1.0.0",
-  "description": "EECS4413 Project",
-  "scripts": {}
+	"name": "dealership",
+	"version": "1.0.0",
+	"description": "EECS4413 Project",
+	"scripts": {
+		"build": "pnpm run -r build",
+		"dev": "pnpm run -r --parallel --aggregate-output dev",
+		"format": "biome format",
+		"lint": "biome lint",
+		"check": "biome check"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "catalog:"
+	}
 }
