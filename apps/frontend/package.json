@@ -1,5 +1,5 @@
 {
-	"name": "@dealership/frontend",
+	"name": "@throttl/frontend",
 	"private": true,
 	"type": "module",
 	"scripts": {

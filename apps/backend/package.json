@@ -1,5 +1,5 @@
 {
-	"name": "@dealership/backend",
+	"name": "@throttl/backend",
 	"type": "module",
 	"scripts": {
 		"dev": "wrangler dev",
