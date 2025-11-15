@@ -3,5 +3,18 @@
 	"extends": "//",
 	"files": {
 		"includes": ["**", "!**/src/routeTree.gen.ts"]
+	},
+	"linter": {
+		"rules": {
+			"nursery": {
+				"useSortedClasses": {
+					"fix": "safe",
+					"level": "warn",
+					"options": {
+						"functions": ["clsx", "cn", "cva"]
+					}
+				}
+			}
+		}
 	}
 }

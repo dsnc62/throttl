@@ -1,20 +1,13 @@
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import type { QueryClient } from "@tanstack/react-query";
 import {
+	createRootRouteWithContext,
 	HeadContent,
 	Scripts,
-	createRootRouteWithContext,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { TanStackDevtools } from "@tanstack/react-devtools";
-
-import Header from "../components/Header";
-
-import StoreDevtools from "../lib/demo-store-devtools";
-
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
-
 import appCss from "../styles.css?url";
-
-import type { QueryClient } from "@tanstack/react-query";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -22,22 +15,22 @@ interface MyRouterContext {
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
 	head: () => ({
+		links: [
+			{
+				href: appCss,
+				rel: "stylesheet",
+			},
+		],
 		meta: [
 			{
 				charSet: "utf-8",
 			},
 			{
-				name: "viewport",
 				content: "width=device-width, initial-scale=1",
+				name: "viewport",
 			},
 			{
 				title: "TanStack Start Starter",
-			},
-		],
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
 			},
 		],
 	}),
@@ -52,7 +45,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 				<HeadContent />
 			</head>
 			<body>
-				<Header />
 				{children}
 				<TanStackDevtools
 					config={{
@@ -63,7 +55,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 							name: "Tanstack Router",
 							render: <TanStackRouterDevtoolsPanel />,
 						},
-						StoreDevtools,
 						TanStackQueryDevtools,
 					]}
 				/>
