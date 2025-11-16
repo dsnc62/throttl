@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "pnpm run -r build",
 		"dev": "pnpm run -r --parallel --aggregate-output dev",
+		"dev:db": "turso dev --db-file throttl.db",
 		"format": "biome format",
 		"lint": "biome lint",
 		"check": "biome check"
