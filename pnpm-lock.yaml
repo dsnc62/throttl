@@ -12,6 +12,9 @@ catalogs:
     '@types/node':
       specifier: ^24
       version: 24.10.1
+    zod:
+      specifier: ^4
+      version: 4.1.12
 
 importers:
 
@@ -35,9 +38,15 @@ importers:
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.4.1)(gel@2.2.0)(kysely@0.28.8)
+      drizzle-zod:
+        specifier: ^0.8.3
+        version: 0.8.3(drizzle-orm@0.44.7(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.4.1)(gel@2.2.0)(kysely@0.28.8))(zod@4.1.12)
       hono:
         specifier: ^4.10.6
         version: 4.10.6
+      zod:
+        specifier: 'catalog:'
+        version: 4.1.12
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -154,7 +163,7 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6))
       zod:
-        specifier: ^4.1.12
+        specifier: 'catalog:'
         version: 4.1.12
     devDependencies:
       '@biomejs/biome':
@@ -2825,6 +2834,12 @@ packages:
         optional: true
       sqlite3:
         optional: true
+
+  drizzle-zod@0.8.3:
+    resolution: {integrity: sha512-66yVOuvGhKJnTdiqj1/Xaaz9/qzOdRJADpDa68enqS6g3t0kpNkwNYjUuaeXgZfO/UWuIM9HIhSlJ6C5ZraMww==}
+    peerDependencies:
+      drizzle-orm: '>=0.36.0'
+      zod: ^3.25.0 || ^4.0.0
 
   electron-to-chromium@1.5.253:
     resolution: {integrity: sha512-O0tpQ/35rrgdiGQ0/OFWhy1itmd9A6TY9uQzlqj3hKSu/aYpe7UIn5d7CU2N9myH6biZiWF3VMZVuup8pw5U9w==}
@@ -6400,6 +6415,11 @@ snapshots:
       better-sqlite3: 12.4.1
       gel: 2.2.0
       kysely: 0.28.8
+
+  drizzle-zod@0.8.3(drizzle-orm@0.44.7(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.4.1)(gel@2.2.0)(kysely@0.28.8))(zod@4.1.12):
+    dependencies:
+      drizzle-orm: 0.44.7(@libsql/client@0.15.15)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.4.1)(gel@2.2.0)(kysely@0.28.8)
+      zod: 4.1.12
 
   electron-to-chromium@1.5.253: {}
 
