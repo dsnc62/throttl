@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/sqlite-core";
 import { user } from "./auth";
 
-const ENUM_CLASS = [
+export const ENUM_CLASS = [
 	"hatchback",
 	"minivan",
 	"sedan",
@@ -18,7 +18,7 @@ const ENUM_CLASS = [
 	"truck",
 ] as const;
 
-const ENUM_COUNTRIES = [
+export const ENUM_COUNTRIES = [
 	"america",
 	"china",
 	"germany",
@@ -27,15 +27,32 @@ const ENUM_COUNTRIES = [
 	"south-korea",
 ] as const;
 
-const ENUM_FUEL = ["gasoline", "diesel", "electric", "hybrid", "phev"] as const;
+export const ENUM_FUEL = [
+	"gasoline",
+	"diesel",
+	"electric",
+	"hybrid",
+	"phev",
+] as const;
 
-const ENUM_TRANS = ["automatic", "cvt", "e-cvt", "manual", "none"] as const;
+export const ENUM_TRANS = [
+	"automatic",
+	"cvt",
+	"e-cvt",
+	"manual",
+	"none",
+] as const;
 
-const ENUM_SIZE = ["compact", "mid-size", "large"] as const;
+export const ENUM_SIZE = ["compact", "mid-size", "large"] as const;
 
-const ENUM_STATUS = ["purchased", "leased", "rented", "returned"] as const;
+export const ENUM_STATUS = [
+	"purchased",
+	"leased",
+	"rented",
+	"returned",
+] as const;
 
-const ENUM_XWD = ["fwd", "rwd", "awd", "4wd"] as const;
+export const ENUM_XWD = ["fwd", "rwd", "awd", "4wd"] as const;
 
 export const car = sqliteTable(
 	"car",
