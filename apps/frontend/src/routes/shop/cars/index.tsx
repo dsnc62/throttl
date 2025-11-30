@@ -67,7 +67,7 @@ function ShopCars() {
 			const params = new URLSearchParams({
 				limit: "12",
 				offset: `${(page ?? 0) * 12}`,
-				...(carClass && { class: carClass }),
+				...(carClass && { carClass }),
 				...(color && { color }),
 				...(fuel && { fuel }),
 				...(make && { make: make.toString() }),
@@ -171,7 +171,7 @@ function ShopCars() {
 								)}
 							</SelectTrigger>
 							<SelectContent align="start">
-								<SelectItem value="all">Any</SelectItem>
+								<SelectItem value="all">All</SelectItem>
 								<SelectGroup>
 									<SelectLabel>Vehicle Class</SelectLabel>
 									<SelectItem value="hatchback">Hatchback</SelectItem>
@@ -195,7 +195,7 @@ function ShopCars() {
 								)}
 							</SelectTrigger>
 							<SelectContent align="start">
-								<SelectItem value="all">Any</SelectItem>
+								<SelectItem value="all">All</SelectItem>
 								<SelectGroup>
 									<SelectLabel>Fuel Type</SelectLabel>
 									<SelectItem value="gasoline">Gasoline</SelectItem>
@@ -239,7 +239,7 @@ function ShopCars() {
 								)}
 							</SelectTrigger>
 							<SelectContent align="start">
-								<SelectItem value="all">Any</SelectItem>
+								<SelectItem value="all">All</SelectItem>
 								<SelectGroup>
 									<SelectLabel>Drivetrain</SelectLabel>
 									<SelectItem value="fwd">FWD</SelectItem>

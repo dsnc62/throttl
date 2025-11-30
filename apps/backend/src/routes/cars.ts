@@ -13,12 +13,10 @@ app.get("/", async (c) => {
 });
 
 app.get("/inventory", async (c) => {
-	const { limit, offset, carClass, make, sort, ...otherFilters } =
-		c.req.query();
+	const { limit, offset, make, sort, ...otherFilters } = c.req.query();
 	const cars = await getCarInventory({
 		filters: {
 			...otherFilters,
-			class: carClass || undefined,
 			make: make ? Number(make) : undefined,
 		},
 		limit: limit ? Number(limit) : undefined,

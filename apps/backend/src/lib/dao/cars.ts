@@ -22,7 +22,7 @@ export async function getCarInventory(opts?: {
 		make?: number;
 		color?: string;
 		size?: string;
-		class?: string;
+		carClass?: string;
 		fuel?: string;
 		xwd?: string;
 	};
@@ -130,8 +130,8 @@ export async function getCarInventory(opts?: {
 								: undefined,
 
 							// class filter
-							f.class
-								? eq(car.class, f.class as (typeof ENUM_CLASS)[number])
+							f.carClass
+								? eq(car.class, f.carClass as (typeof ENUM_CLASS)[number])
 								: undefined,
 
 							// make filter
