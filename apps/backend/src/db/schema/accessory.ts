@@ -9,7 +9,7 @@ import {
 import { user } from "./auth";
 import { car } from "./car";
 
-const ENUM_CAT = [
+export const ENUM_CAT = [
 	"air fresheners",
 	"cleaning",
 	"dashcams",
@@ -17,7 +17,12 @@ const ENUM_CAT = [
 	"mats",
 ] as const;
 
-const ENUM_STATUS = ["purchased", "leased", "rented", "returned"] as const;
+export const ENUM_STATUS = [
+	"purchased",
+	"leased",
+	"rented",
+	"returned",
+] as const;
 
 export const accessory = sqliteTable("accessory", {
 	category: text("category", { enum: ENUM_CAT }).notNull(),
