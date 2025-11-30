@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	stripSearchParams,
+	useNavigate,
+} from "@tanstack/react-router";
 import { FrownIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback } from "react";
 import z from "zod";
@@ -35,17 +40,25 @@ const CATEGORIES = [
 	"mats",
 ];
 
+const defaultValues = {
+	page: 0,
+	sort: "best",
+} as const;
+
 const shopAccessoriesSearchSchema = z.object({
 	car: z.number().optional(),
 	category: z.string().optional(),
 	make: z.string().optional(),
-	page: z.number().default(0),
-	sort: z.string().default("best"),
+	page: z.number().default(defaultValues.page),
+	sort: z.string().default(defaultValues.sort),
 });
 type ShopAccessoriesSearchSchema = z.infer<typeof shopAccessoriesSearchSchema>;
 
 export const Route = createFileRoute("/shop/accessories/")({
 	component: ShopAccessories,
+	search: {
+		middlewares: [stripSearchParams(defaultValues)],
+	},
 	validateSearch: shopAccessoriesSearchSchema,
 });
 
@@ -128,7 +141,7 @@ function ShopAccessories() {
 			<ShopNav />
 			<main className="flex flex-col gap-6 p-8">
 				<div className="flex items-center justify-between gap-4">
-					<div className="flex gap-2">
+					<div className="flex items-center gap-2">
 						<Button
 							onClick={() => navigate({ search: { page } })}
 							size="icon"
@@ -296,7 +309,15 @@ function ShopAccessories() {
 				{data && data.length > 0 && (
 					<div className="mx-auto flex items-center justify-center gap-2">
 						<Button asChild={!!page} disabled={!page} variant="secondary">
-							<Link search={{ page: (page ?? 1) - 1 }} to="/shop/accessories">
+							<Link
+								search={{
+									car,
+									category,
+									make,
+									page: (page ?? 1) - 1,
+								}}
+								to={Route.fullPath}
+							>
 								Back
 							</Link>
 						</Button>
@@ -305,7 +326,15 @@ function ShopAccessories() {
 							disabled={!data?.length || data.length < 12}
 							variant="secondary"
 						>
-							<Link search={{ page: (page ?? 0) + 1 }} to="/shop/accessories">
+							<Link
+								search={{
+									car,
+									category,
+									make,
+									page: (page ?? 0) + 1,
+								}}
+								to={Route.fullPath}
+							>
 								Next
 							</Link>
 						</Button>

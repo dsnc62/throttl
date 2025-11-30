@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	stripSearchParams,
+	useNavigate,
+} from "@tanstack/react-router";
 import { FrownIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback } from "react";
 import z from "zod";
@@ -39,20 +44,28 @@ const COLORS = [
 	"white",
 ];
 
+const defaultValues = {
+	page: 0,
+	sort: "best",
+} as const;
+
 const shopCarsSearchSchema = z.object({
 	carClass: z.string().optional(),
 	color: z.string().optional(),
 	fuel: z.string().optional(),
 	make: z.number().optional(),
-	page: z.number().default(0),
+	page: z.number().default(defaultValues.page),
 	size: z.string().optional(),
-	sort: z.string().default("best"),
+	sort: z.string().default(defaultValues.sort),
 	xwd: z.string().optional(),
 });
 type ShopCarsSearchSchema = z.infer<typeof shopCarsSearchSchema>;
 
 export const Route = createFileRoute("/shop/cars/")({
 	component: ShopCars,
+	search: {
+		middlewares: [stripSearchParams(defaultValues)],
+	},
 	validateSearch: shopCarsSearchSchema,
 });
 
@@ -130,7 +143,14 @@ function ShopCars() {
 			<ShopNav />
 			<main className="flex flex-col gap-6 p-8">
 				<div className="flex items-center justify-between gap-4">
-					<div className="flex gap-2">
+					<div className="flex items-center gap-2">
+						<Button
+							onClick={() => navigate({ search: { page } })}
+							size="icon"
+							variant="secondary"
+						>
+							<RotateCcwIcon />
+						</Button>
 						<Select
 							onValueChange={(v) =>
 								search("make", v === "all" ? "all" : Number(v))
@@ -282,13 +302,6 @@ function ShopCars() {
 								</SelectGroup>
 							</SelectContent>
 						</Select>
-						<Button
-							onClick={() => navigate({ search: { page } })}
-							size="icon"
-							variant="secondary"
-						>
-							<RotateCcwIcon />
-						</Button>
 					</div>
 
 					<Select onValueChange={(v) => search("sort", v)} value={sort}>
@@ -417,7 +430,19 @@ function ShopCars() {
 				{data && data.length > 0 && (
 					<div className="mx-auto flex items-center justify-center gap-2">
 						<Button asChild={!!page} disabled={!page} variant="secondary">
-							<Link search={{ page: (page ?? 1) - 1 }} to="/shop/cars">
+							<Link
+								search={{
+									carClass,
+									color,
+									fuel,
+									make,
+									page: (page ?? 1) - 1,
+									size,
+									sort,
+									xwd,
+								}}
+								to={Route.fullPath}
+							>
 								Back
 							</Link>
 						</Button>
@@ -426,7 +451,19 @@ function ShopCars() {
 							disabled={!data?.length || data.length < 12}
 							variant="secondary"
 						>
-							<Link search={{ page: (page ?? 0) + 1 }} to="/shop/cars">
+							<Link
+								search={{
+									carClass,
+									color,
+									fuel,
+									make,
+									page: (page ?? 0) + 1,
+									size,
+									sort,
+									xwd,
+								}}
+								to={Route.fullPath}
+							>
 								Next
 							</Link>
 						</Button>
