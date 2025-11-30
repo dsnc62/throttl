@@ -401,7 +401,6 @@ function ShopCars() {
 											Learn More
 										</Link>
 									</Button>
-									<Button>Order</Button>
 								</CardFooter>
 							</Card>
 						);

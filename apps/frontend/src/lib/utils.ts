@@ -64,3 +64,45 @@ export function calculateRent(
 
 	return dollarsPerKm * (850 * days);
 }
+
+export function calcLoanPayments(
+	price: number,
+	rate: number,
+	termYears: number,
+) {
+	const annualRate = rate / 100;
+
+	if (annualRate === 0) {
+		const numMonthlyPayments = termYears * 12;
+		const numWeeklyPayments = termYears * 52;
+		const numBiWeeklyPayments = termYears * 26;
+		return {
+			"bi-weekly": price / numBiWeeklyPayments,
+			monthly: price / numMonthlyPayments,
+			weekly: price / numWeeklyPayments,
+		};
+	}
+
+	// Monthly payment
+	const monthlyRate = annualRate / 12;
+	const numMonthlyPayments = termYears * 12;
+	const monthly =
+		(price * monthlyRate * (1 + monthlyRate) ** numMonthlyPayments) /
+		((1 + monthlyRate) ** numMonthlyPayments - 1);
+
+	// Weekly payment
+	const weeklyRate = annualRate / 52;
+	const numWeeklyPayments = termYears * 52;
+	const weekly =
+		(price * weeklyRate * (1 + weeklyRate) ** numWeeklyPayments) /
+		((1 + weeklyRate) ** numWeeklyPayments - 1);
+
+	// Bi-weekly payment
+	const biWeeklyRate = annualRate / 26;
+	const numBiWeeklyPayments = termYears * 26;
+	const biWeekly =
+		(price * biWeeklyRate * (1 + biWeeklyRate) ** numBiWeeklyPayments) /
+		((1 + biWeeklyRate) ** numBiWeeklyPayments - 1);
+
+	return { "bi-weekly": biWeekly, monthly, weekly };
+}

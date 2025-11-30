@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import {
 	getAllCarManufacturers,
 	getAllCars,
+	getCarFromInventory,
 	getCarInventory,
 } from "@/lib/dao/cars";
 
@@ -24,6 +25,12 @@ app.get("/inventory", async (c) => {
 		sort: (sort as `${string}:${"asc" | "desc"}`) || undefined,
 	});
 	return c.json(cars, 200);
+});
+
+app.get("/inventory/:id", async (c) => {
+	const id = c.req.param("id");
+	const car = await getCarFromInventory(id);
+	return c.json(car, 200);
 });
 
 app.get("/manufacturers", async (c) => {

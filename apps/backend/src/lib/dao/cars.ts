@@ -163,6 +163,25 @@ export async function getCarInventory(opts?: {
 	return inv;
 }
 
+export async function getCarFromInventory(id: string) {
+	const car = await db.query.carInventory.findFirst({
+		where: (fields, { eq }) => eq(fields.id, id),
+		with: {
+			trim: {
+				with: {
+					car: {
+						with: {
+							make: true,
+						},
+					},
+				},
+			},
+		},
+	});
+
+	return car;
+}
+
 export async function getAllCarManufacturers() {
 	const all = await db.query.carManufacturer.findMany({
 		orderBy: (fields) => fields.name,
