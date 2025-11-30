@@ -13,7 +13,8 @@ app.get("/", async (c) => {
 });
 
 app.get("/inventory", async (c) => {
-	const { limit, offset, carClass, make, ...otherFilters } = c.req.query();
+	const { limit, offset, carClass, make, sort, ...otherFilters } =
+		c.req.query();
 	const cars = await getCarInventory({
 		filters: {
 			...otherFilters,
@@ -22,6 +23,7 @@ app.get("/inventory", async (c) => {
 		},
 		limit: limit ? Number(limit) : undefined,
 		offset: offset ? Number(offset) : undefined,
+		sort: (sort as `${string}:${"asc" | "desc"}`) || undefined,
 	});
 	return c.json(cars, 200);
 });

@@ -1,4 +1,4 @@
-import type { SQL } from "drizzle-orm";
+import { eq, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import {
 	car,
@@ -17,7 +17,7 @@ export async function getAllCars() {
 	return allCars;
 }
 
-export async function getCarInventory(options?: {
+export async function getCarInventory(opts?: {
 	filters?: {
 		make?: number;
 		color?: string;
@@ -28,23 +28,88 @@ export async function getCarInventory(options?: {
 	};
 	limit?: number;
 	offset?: number;
+	sort?: `${string}:${"asc" | "desc"}`;
 }) {
 	const inv = await db.query.carInventory.findMany({
-		limit: options?.limit ?? 50,
-		offset: options?.offset ?? 0,
+		limit: opts?.limit ?? 50,
+		offset: opts?.offset ?? 0,
+		orderBy: (fields, { asc, desc }) => {
+			if (!opts?.sort) {
+				return fields.id;
+			}
+
+			const [key, dir] = opts.sort.split(":") as [string, "asc" | "desc"];
+			switch (key) {
+				case "fuelEcon": {
+					const econ = db
+						.select({ econ: carTrim.fuelEcon })
+						.from(carTrim)
+						.where(eq(carTrim.id, fields.trim));
+
+					return [dir === "asc" ? asc(econ) : desc(econ), fields.id];
+				}
+
+				case "mileage":
+					return [
+						dir === "asc" ? asc(fields.mileage) : desc(fields.mileage),
+						fields.id,
+					];
+
+				case "model": {
+					const model = db
+						.select({ model: car.model })
+						.from(carTrim)
+						.innerJoin(car, eq(carTrim.car, car.id))
+						.where(eq(carTrim.id, fields.trim));
+
+					const trim = db
+						.select({ model: carTrim.name })
+						.from(carTrim)
+						.where(eq(carTrim.id, fields.trim));
+
+					return [
+						dir === "asc" ? asc(model) : desc(model),
+						dir === "asc" ? asc(trim) : desc(trim),
+						fields.id,
+					];
+				}
+
+				case "price": {
+					const price = db
+						.select({ price: carTrim.price })
+						.from(carTrim)
+						.where(eq(carTrim.id, fields.trim));
+
+					return [dir === "asc" ? asc(price) : desc(price), fields.id];
+				}
+
+				case "year": {
+					const year = db
+						.select({ year: car.year })
+						.from(carTrim)
+						.innerJoin(car, eq(carTrim.car, car.id))
+						.where(eq(carTrim.id, fields.trim));
+
+					return [dir === "asc" ? asc(year) : desc(year), fields.id];
+				}
+
+				default:
+					return fields.id;
+			}
+		},
 		where: (fields, { or, eq, and, exists }) => {
 			const base = or(fields.purchasable, fields.rentable);
 
-			if (!options?.filters) {
+			if (!opts?.filters) {
 				return base;
 			}
 
 			let colorFilter: SQL<unknown> | undefined;
-			if (options.filters.color) {
-				colorFilter = eq(fields.color, options.filters.color);
+			if (opts.filters.color) {
+				colorFilter = eq(fields.color, opts.filters.color);
 			}
 
-			const f = options.filters;
+			const f = opts.filters;
 			const otherFilters = exists(
 				db
 					.select()

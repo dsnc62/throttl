@@ -44,8 +44,9 @@ const shopCarsSearchSchema = z.object({
 	color: z.string().optional(),
 	fuel: z.string().optional(),
 	make: z.number().optional(),
-	page: z.number().optional().default(0),
+	page: z.number().default(0),
 	size: z.string().optional(),
+	sort: z.string().default("best"),
 	xwd: z.string().optional(),
 });
 type ShopCarsSearchSchema = z.infer<typeof shopCarsSearchSchema>;
@@ -56,7 +57,8 @@ export const Route = createFileRoute("/shop/cars/")({
 });
 
 function ShopCars() {
-	const { make, color, page, size, carClass, fuel, xwd } = Route.useSearch();
+	const { carClass, color, fuel, make, page, size, sort, xwd } =
+		Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
 	// queries
@@ -65,12 +67,13 @@ function ShopCars() {
 			const params = new URLSearchParams({
 				limit: "12",
 				offset: `${(page ?? 0) * 12}`,
-				...(make && { make: make.toString() }),
-				...(color && { color }),
-				...(size && { size }),
 				...(carClass && { class: carClass }),
+				...(color && { color }),
 				...(fuel && { fuel }),
+				...(make && { make: make.toString() }),
+				...(size && { size }),
 				...(xwd && { xwd }),
+				...(sort && { sort }),
 			});
 			const res = await fetch(
 				`${env.VITE_BACKEND_URL}/api/cars/inventory?${params}`,
@@ -81,12 +84,13 @@ function ShopCars() {
 			"cars",
 			"inventory",
 			`page=${page ?? 0}`,
-			`make=${make ?? "all"}`,
-			`color=${color ?? "all"}`,
-			`size=${size ?? "all"}`,
 			`class=${carClass ?? "all"}`,
+			`color=${color ?? "all"}`,
 			`fuel=${fuel ?? "all"}`,
+			`make=${make ?? "all"}`,
+			`size=${size ?? "all"}`,
 			`xwd=${xwd ?? "all"}`,
+			`sort=${sort ?? "best"}`,
 		],
 	});
 
@@ -112,174 +116,222 @@ function ShopCars() {
 					fuel,
 					make,
 					size,
+					sort,
 					xwd,
 					[key]: value === "all" ? undefined : value,
 				},
 			});
 		},
-		[carClass, color, fuel, make, navigate, size, xwd],
+		[carClass, color, fuel, make, navigate, size, sort, xwd],
 	);
 
 	return (
 		<>
 			<ShopNav />
 			<main className="flex flex-col gap-6 p-8">
-				<div className="flex gap-3">
-					<Select
-						onValueChange={(v) =>
-							search("make", v === "all" ? "all" : Number(v))
-						}
-						value={make?.toString() ?? "all"}
-					>
+				<div className="flex items-center justify-between gap-4">
+					<div className="flex gap-2">
+						<Select
+							onValueChange={(v) =>
+								search("make", v === "all" ? "all" : Number(v))
+							}
+							value={make?.toString() ?? "all"}
+						>
+							<SelectTrigger>
+								{!make ? (
+									<span className="text-muted-foreground">Make</span>
+								) : (
+									<SelectValue placeholder="Make" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Manufacturers</SelectLabel>
+									{manufacturers?.map((make) => (
+										<SelectItem
+											key={`make-${make.id}`}
+											value={make.id.toString()}
+										>
+											{make.name}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Select
+							onValueChange={(v) => search("carClass", v)}
+							value={carClass ?? "all"}
+						>
+							<SelectTrigger>
+								{!carClass ? (
+									<span className="text-muted-foreground">Class</span>
+								) : (
+									<SelectValue placeholder="Class" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">Any</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Vehicle Class</SelectLabel>
+									<SelectItem value="hatchback">Hatchback</SelectItem>
+									<SelectItem value="minivan">Minivan</SelectItem>
+									<SelectItem value="sedan">Sedan</SelectItem>
+									<SelectItem value="sports-car">Sports Car</SelectItem>
+									<SelectItem value="suv">SUV</SelectItem>
+									<SelectItem value="truck">Truck</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Select
+							onValueChange={(v) => search("fuel", v)}
+							value={fuel ?? "all"}
+						>
+							<SelectTrigger>
+								{!fuel ? (
+									<span className="text-muted-foreground">Fuel</span>
+								) : (
+									<SelectValue placeholder="Fuel" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">Any</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Fuel Type</SelectLabel>
+									<SelectItem value="gasoline">Gasoline</SelectItem>
+									<SelectItem value="diesel">Diesel</SelectItem>
+									<SelectItem value="electric">Electric</SelectItem>
+									<SelectItem value="hybrid">Hybrid</SelectItem>
+									<SelectItem value="phev">Plug-in Hybrid</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Select
+							onValueChange={(v) => search("size", v)}
+							value={size ?? "all"}
+						>
+							<SelectTrigger>
+								{!size ? (
+									<span className="text-muted-foreground">Size</span>
+								) : (
+									<SelectValue placeholder="Size" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Sizes</SelectLabel>
+									<SelectItem value="compact">Compact</SelectItem>
+									<SelectItem value="mid-size">Mid-size</SelectItem>
+									<SelectItem value="large">Large</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Select
+							onValueChange={(v) => search("xwd", v)}
+							value={xwd ?? "all"}
+						>
+							<SelectTrigger>
+								{!xwd ? (
+									<span className="text-muted-foreground">Drive</span>
+								) : (
+									<SelectValue placeholder="Drive" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">Any</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Drivetrain</SelectLabel>
+									<SelectItem value="fwd">FWD</SelectItem>
+									<SelectItem value="rwd">RWD</SelectItem>
+									<SelectItem value="awd">AWD</SelectItem>
+									<SelectItem value="4wd">4WD</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Select
+							onValueChange={(v) => search("color", v)}
+							value={color ?? "all"}
+						>
+							<SelectTrigger>
+								{!color ? (
+									<span className="text-muted-foreground">Colour</span>
+								) : (
+									<SelectValue placeholder="Colour" />
+								)}
+							</SelectTrigger>
+							<SelectContent align="start">
+								<SelectItem value="all">All</SelectItem>
+								<SelectGroup>
+									<SelectLabel>Colours</SelectLabel>
+									{COLORS.map((c) => (
+										<SelectItem
+											className="capitalize"
+											key={`car-inv-${c}`}
+											value={c}
+										>
+											<div
+												className="mr-1 size-3 rounded-full border border-foreground/30"
+												style={{
+													backgroundColor: c.replaceAll(" ", ""),
+												}}
+											/>
+											{capitalize(c)}
+										</SelectItem>
+									))}
+								</SelectGroup>
+							</SelectContent>
+						</Select>
+						<Button
+							onClick={() => navigate({ search: { page } })}
+							size="icon"
+							variant="secondary"
+						>
+							<RotateCcwIcon />
+						</Button>
+					</div>
+
+					<Select onValueChange={(v) => search("sort", v)} value={sort}>
 						<SelectTrigger>
-							{!make ? (
-								<span className="text-muted-foreground">Make</span>
-							) : (
-								<SelectValue placeholder="Make" />
-							)}
+							<SelectValue placeholder="Sort" />
 						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All</SelectItem>
+						<SelectContent align="end">
+							<SelectItem value="best">Best Match</SelectItem>
 							<SelectGroup>
-								<SelectLabel>Manufacturers</SelectLabel>
-								{manufacturers?.map((make) => (
-									<SelectItem
-										key={`make-${make.id}`}
-										value={make.id.toString()}
-									>
-										{make.name}
-									</SelectItem>
-								))}
+								<SelectLabel>Model</SelectLabel>
+								<SelectItem value="model:asc">Model: A-Z</SelectItem>
+								<SelectItem value="model:desc">Model: Z-A</SelectItem>
+							</SelectGroup>
+							<SelectGroup>
+								<SelectLabel>Price</SelectLabel>
+								<SelectItem value="price:asc">Price: Low to High</SelectItem>
+								<SelectItem value="price:desc">Price: High to Low</SelectItem>
+							</SelectGroup>
+							<SelectGroup>
+								<SelectLabel>Mileage</SelectLabel>
+								<SelectItem value="mileage:asc">
+									Mileage: Low to High
+								</SelectItem>
+								<SelectItem value="mileage:desc">
+									Mileage: High to Low
+								</SelectItem>
+							</SelectGroup>
+							<SelectGroup>
+								<SelectLabel>Year</SelectLabel>
+								<SelectItem value="year:desc">Year: Newest First</SelectItem>
+								<SelectItem value="year:asc">Year: Oldest First</SelectItem>
+							</SelectGroup>
+							<SelectGroup>
+								<SelectLabel>Fuel Economy</SelectLabel>
+								<SelectItem value="fuelEcon:asc">
+									Fuel Economy: Best First
+								</SelectItem>
+								<SelectItem value="fuelEcon:desc">
+									Fuel Economy: Worst First
+								</SelectItem>
 							</SelectGroup>
 						</SelectContent>
 					</Select>
-					<Select
-						onValueChange={(v) => search("carClass", v)}
-						value={carClass ?? "all"}
-					>
-						<SelectTrigger>
-							{!carClass ? (
-								<span className="text-muted-foreground">Class</span>
-							) : (
-								<SelectValue placeholder="Class" />
-							)}
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">Any</SelectItem>
-							<SelectGroup>
-								<SelectLabel>Vehicle Class</SelectLabel>
-								<SelectItem value="hatchback">Hatchback</SelectItem>
-								<SelectItem value="minivan">Minivan</SelectItem>
-								<SelectItem value="sedan">Sedan</SelectItem>
-								<SelectItem value="sports-car">Sports Car</SelectItem>
-								<SelectItem value="suv">SUV</SelectItem>
-								<SelectItem value="truck">Truck</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Select
-						onValueChange={(v) => search("fuel", v)}
-						value={fuel ?? "all"}
-					>
-						<SelectTrigger>
-							{!fuel ? (
-								<span className="text-muted-foreground">Fuel</span>
-							) : (
-								<SelectValue placeholder="Fuel" />
-							)}
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">Any</SelectItem>
-							<SelectGroup>
-								<SelectLabel>Fuel Type</SelectLabel>
-								<SelectItem value="gasoline">Gasoline</SelectItem>
-								<SelectItem value="diesel">Diesel</SelectItem>
-								<SelectItem value="electric">Electric</SelectItem>
-								<SelectItem value="hybrid">Hybrid</SelectItem>
-								<SelectItem value="phev">Plug-in Hybrid</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Select
-						onValueChange={(v) => search("size", v)}
-						value={size ?? "all"}
-					>
-						<SelectTrigger>
-							{!size ? (
-								<span className="text-muted-foreground">Size</span>
-							) : (
-								<SelectValue placeholder="Size" />
-							)}
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All</SelectItem>
-							<SelectGroup>
-								<SelectLabel>Sizes</SelectLabel>
-								<SelectItem value="compact">Compact</SelectItem>
-								<SelectItem value="mid-size">Mid-size</SelectItem>
-								<SelectItem value="large">Large</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Select onValueChange={(v) => search("xwd", v)} value={xwd ?? "all"}>
-						<SelectTrigger>
-							{!xwd ? (
-								<span className="text-muted-foreground">Drive</span>
-							) : (
-								<SelectValue placeholder="Drive" />
-							)}
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">Any</SelectItem>
-							<SelectGroup>
-								<SelectLabel>Drivetrain</SelectLabel>
-								<SelectItem value="fwd">FWD</SelectItem>
-								<SelectItem value="rwd">RWD</SelectItem>
-								<SelectItem value="awd">AWD</SelectItem>
-								<SelectItem value="4wd">4WD</SelectItem>
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Select
-						onValueChange={(v) => search("color", v)}
-						value={color ?? "all"}
-					>
-						<SelectTrigger>
-							{!color ? (
-								<span className="text-muted-foreground">Colour</span>
-							) : (
-								<SelectValue placeholder="Colour" />
-							)}
-						</SelectTrigger>
-						<SelectContent align="start">
-							<SelectItem value="all">All</SelectItem>
-							<SelectGroup>
-								<SelectLabel>Colours</SelectLabel>
-								{COLORS.map((c) => (
-									<SelectItem
-										className="capitalize"
-										key={`car-inv-${c}`}
-										value={c}
-									>
-										<div
-											className="mr-1 size-3 rounded-full border border-foreground/30"
-											style={{
-												backgroundColor: c.replaceAll(" ", ""),
-											}}
-										/>
-										{capitalize(c)}
-									</SelectItem>
-								))}
-							</SelectGroup>
-						</SelectContent>
-					</Select>
-					<Button
-						onClick={() => navigate({ search: { page } })}
-						size="icon"
-						variant="secondary"
-					>
-						<RotateCcwIcon />
-					</Button>
 				</div>
 
 				{data && data.length > 0 ? (
