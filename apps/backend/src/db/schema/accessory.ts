@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	integer,
 	primaryKey,
@@ -69,4 +69,33 @@ export const accessoryOrder = sqliteTable(
 			.references(() => user.id),
 	},
 	(t) => [primaryKey({ columns: [t.inventory, t.user] })],
+);
+
+export const accessoryRelations = relations(accessory, ({ many }) => ({
+	cars: many(accessoryCarXref),
+	inventories: many(accessoryInventory),
+}));
+
+export const accessoryCarXrefRelations = relations(
+	accessoryCarXref,
+	({ one }) => ({
+		accessory: one(accessory, {
+			fields: [accessoryCarXref.accessory],
+			references: [accessory.id],
+		}),
+		car: one(car, {
+			fields: [accessoryCarXref.car],
+			references: [car.id],
+		}),
+	}),
+);
+
+export const accessoryInventoryRelations = relations(
+	accessoryInventory,
+	({ one }) => ({
+		accessory: one(accessory, {
+			fields: [accessoryInventory.accessory],
+			references: [accessory.id],
+		}),
+	}),
 );

@@ -11,6 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop/index'
+import { Route as ShopCarsIndexRouteImport } from './routes/shop/cars/index'
+import { Route as ShopAccessoriesIndexRouteImport } from './routes/shop/accessories/index'
+import { Route as ShopCarsInfoRouteImport } from './routes/shop/cars/info'
+import { Route as ShopAccessoriesInfoRouteImport } from './routes/shop/accessories/info'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +26,86 @@ const ShopIndexRoute = ShopIndexRouteImport.update({
   path: '/shop/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopCarsIndexRoute = ShopCarsIndexRouteImport.update({
+  id: '/shop/cars/',
+  path: '/shop/cars/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopAccessoriesIndexRoute = ShopAccessoriesIndexRouteImport.update({
+  id: '/shop/accessories/',
+  path: '/shop/accessories/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopCarsInfoRoute = ShopCarsInfoRouteImport.update({
+  id: '/shop/cars/info',
+  path: '/shop/cars/info',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopAccessoriesInfoRoute = ShopAccessoriesInfoRouteImport.update({
+  id: '/shop/accessories/info',
+  path: '/shop/accessories/info',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/shop': typeof ShopIndexRoute
+  '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
+  '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/accessories': typeof ShopAccessoriesIndexRoute
+  '/shop/cars': typeof ShopCarsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/shop': typeof ShopIndexRoute
+  '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
+  '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/accessories': typeof ShopAccessoriesIndexRoute
+  '/shop/cars': typeof ShopCarsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/shop/': typeof ShopIndexRoute
+  '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
+  '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/accessories/': typeof ShopAccessoriesIndexRoute
+  '/shop/cars/': typeof ShopCarsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/shop'
+  fullPaths:
+    | '/'
+    | '/shop'
+    | '/shop/accessories/info'
+    | '/shop/cars/info'
+    | '/shop/accessories'
+    | '/shop/cars'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/shop'
-  id: '__root__' | '/' | '/shop/'
+  to:
+    | '/'
+    | '/shop'
+    | '/shop/accessories/info'
+    | '/shop/cars/info'
+    | '/shop/accessories'
+    | '/shop/cars'
+  id:
+    | '__root__'
+    | '/'
+    | '/shop/'
+    | '/shop/accessories/info'
+    | '/shop/cars/info'
+    | '/shop/accessories/'
+    | '/shop/cars/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ShopIndexRoute: typeof ShopIndexRoute
+  ShopAccessoriesInfoRoute: typeof ShopAccessoriesInfoRoute
+  ShopCarsInfoRoute: typeof ShopCarsInfoRoute
+  ShopAccessoriesIndexRoute: typeof ShopAccessoriesIndexRoute
+  ShopCarsIndexRoute: typeof ShopCarsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +124,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/cars/': {
+      id: '/shop/cars/'
+      path: '/shop/cars'
+      fullPath: '/shop/cars'
+      preLoaderRoute: typeof ShopCarsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop/accessories/': {
+      id: '/shop/accessories/'
+      path: '/shop/accessories'
+      fullPath: '/shop/accessories'
+      preLoaderRoute: typeof ShopAccessoriesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop/cars/info': {
+      id: '/shop/cars/info'
+      path: '/shop/cars/info'
+      fullPath: '/shop/cars/info'
+      preLoaderRoute: typeof ShopCarsInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop/accessories/info': {
+      id: '/shop/accessories/info'
+      path: '/shop/accessories/info'
+      fullPath: '/shop/accessories/info'
+      preLoaderRoute: typeof ShopAccessoriesInfoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ShopIndexRoute: ShopIndexRoute,
+  ShopAccessoriesInfoRoute: ShopAccessoriesInfoRoute,
+  ShopCarsInfoRoute: ShopCarsInfoRoute,
+  ShopAccessoriesIndexRoute: ShopAccessoriesIndexRoute,
+  ShopCarsIndexRoute: ShopCarsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

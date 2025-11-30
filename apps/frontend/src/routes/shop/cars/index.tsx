@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import z from "zod";
 import { ShopNav } from "@/components/shop/nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,48 +12,38 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { env } from "@/env";
-import type { Accessory, CarInventory } from "@/lib/types";
+import type { CarInventory } from "@/lib/types";
 import { calculateRent, capitalize } from "@/lib/utils";
 
-export const Route = createFileRoute("/shop/")({
-	component: Shop,
+const shopCarsSearchSchema = z.object({
+	page: z.number().optional().default(0),
 });
 
-function Shop() {
-	const { data: carInventory } = useQuery({
+export const Route = createFileRoute("/shop/cars/")({
+	component: ShopCars,
+	validateSearch: shopCarsSearchSchema,
+});
+
+function ShopCars() {
+	const { page } = Route.useSearch();
+
+	const { data } = useQuery({
 		queryFn: async () => {
 			const res = await fetch(
-				`${env.VITE_BACKEND_URL}/api/cars/inventory?limit=8`,
+				`${env.VITE_BACKEND_URL}/api/cars/inventory?limit=12&offset=${(page ?? 0) * 12}`,
 			);
 			return (await res.json()) as CarInventory[];
 		},
-		queryKey: ["cars", "inventory"],
-	});
-
-	const { data: accessories } = useQuery({
-		queryFn: async () => {
-			const res = await fetch(
-				`${env.VITE_BACKEND_URL}/api/accessories?limit=8`,
-			);
-			return (await res.json()) as Accessory[];
-		},
-		queryKey: ["accessories"],
+		queryKey: ["cars", "inventory", `page=${page ?? 0}`],
 	});
 
 	return (
 		<>
 			<ShopNav />
 			<main className="flex flex-col gap-6 p-8">
-				<section className="">
-					<div className="mb-4 flex items-center gap-6">
-						<h2 className="font-display font-semibold text-4xl">Cars</h2>
-						<Button asChild size="lg" variant="secondary">
-							<Link to="/shop/cars">See All</Link>
-						</Button>
-					</div>
-
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-						{carInventory?.map((inv) => {
+				<section>
+					<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+						{data?.map((inv) => {
 							const car = inv.trim.car;
 
 							return (
@@ -122,62 +113,21 @@ function Shop() {
 							);
 						})}
 					</div>
-				</section>
-
-				<section>
-					<div className="mb-4 flex items-center gap-6">
-						<h2 className="font-display font-semibold text-4xl">Accessories</h2>
-						<Button asChild size="lg" variant="secondary">
-							<Link to="/shop/accessories">See All</Link>
+					<div className="mx-auto mt-4 flex items-center justify-center gap-2">
+						<Button asChild={!!page} disabled={!page} variant="secondary">
+							<Link search={{ page: (page ?? 1) - 1 }} to="/shop/cars">
+								Back
+							</Link>
 						</Button>
-					</div>
-
-					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-						{accessories?.map((accessory) => {
-							return (
-								<Card key={`acc-${accessory.id}`}>
-									<CardHeader>
-										<img
-											alt={`${accessory.name} by ${accessory.make}`}
-											className="aspect-video rounded-lg"
-											src=""
-										/>
-										<div className="flex items-start justify-between">
-											<CardTitle>{accessory.name}</CardTitle>
-											<span className="leading-none">
-												{Intl.NumberFormat("en-CA", {
-													currency: "CAD",
-													style: "currency",
-												}).format(accessory.price)}
-											</span>
-										</div>
-										<CardDescription className="flex items-center">
-											by {accessory.make}
-										</CardDescription>
-										<div className="flex items-center gap-2">
-											{accessory.universal && (
-												<Badge variant="secondary">Universal</Badge>
-											)}
-										</div>
-									</CardHeader>
-									<CardFooter className="items-center justify-end gap-3">
-										<Button variant="secondary">
-											<Link
-												search={{ id: accessory.id }}
-												to="/shop/accessories/info"
-											>
-												Learn More
-											</Link>
-										</Button>
-										<Button disabled={accessory.inventories.length <= 0}>
-											{accessory.inventories.length > 0
-												? "Add to Cart"
-												: "Sold Out"}
-										</Button>
-									</CardFooter>
-								</Card>
-							);
-						})}
+						<Button
+							asChild={!!data?.length && data.length >= 12}
+							disabled={!data?.length || data.length < 12}
+							variant="secondary"
+						>
+							<Link search={{ page: (page ?? 0) + 1 }} to="/shop/cars">
+								Next
+							</Link>
+						</Button>
 					</div>
 				</section>
 			</main>

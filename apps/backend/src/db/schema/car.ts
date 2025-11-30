@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	integer,
 	real,
@@ -134,3 +134,22 @@ export const carOrder = sqliteTable(
 			.where(sql`${t.status} != 'returned'`),
 	],
 );
+
+export const carRelations = relations(car, ({ one, many }) => ({
+	make: one(carManufacturer, {
+		fields: [car.make],
+		references: [carManufacturer.id],
+	}),
+	trims: many(carTrim),
+}));
+
+export const carTrimRelations = relations(carTrim, ({ one }) => ({
+	car: one(car, { fields: [carTrim.car], references: [car.id] }),
+}));
+
+export const carInventoryRelations = relations(carInventory, ({ one }) => ({
+	trim: one(carTrim, {
+		fields: [carInventory.trim],
+		references: [carTrim.id],
+	}),
+}));

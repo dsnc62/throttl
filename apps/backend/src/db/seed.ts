@@ -1,7 +1,11 @@
 import type { createInsertSchema } from "drizzle-zod";
 import type z from "zod";
 import { db } from ".";
-import { accessory, accessoryCarXref } from "./schema/accessory";
+import {
+	accessory,
+	accessoryCarXref,
+	accessoryInventory,
+} from "./schema/accessory";
 import { car, carInventory, carManufacturer, carTrim } from "./schema/car";
 
 type Accessory = z.infer<
@@ -10,6 +14,10 @@ type Accessory = z.infer<
 
 type AccessoryCarXref = z.infer<
 	ReturnType<typeof createInsertSchema<typeof accessoryCarXref>>
+>;
+
+type AccessoryInventory = z.infer<
+	ReturnType<typeof createInsertSchema<typeof accessoryInventory>>
 >;
 
 type Car = z.infer<ReturnType<typeof createInsertSchema<typeof car>>>;
@@ -799,9 +807,9 @@ const COLORS = [
 	"green",
 	"blue",
 	"grey",
-	"bluegrey",
+	"dark slate blue",
 	"silver",
-	"darkgrey",
+	"dark grey",
 	"black",
 	"white",
 ];
@@ -813,7 +821,7 @@ const CAR_INV: CarInventory[] = TRIMS.flatMap((_, idx) => {
 	const count = Math.floor(Math.random() * 8) + 1;
 	for (let i = 0; i < count; i++) {
 		// select random color
-		const colorIndex = Math.floor(Math.random() * COLORS.length);
+		const colorIndex = Math.floor(Math.random() * (COLORS.length + 1));
 
 		// select random purchasable/rentable values (0: none, 1: rentable, 2: purchasable, 3: both)
 		const rand = Math.floor(Math.random() * 4);
@@ -821,6 +829,7 @@ const CAR_INV: CarInventory[] = TRIMS.flatMap((_, idx) => {
 		inv.push({
 			color: COLORS[colorIndex],
 			id: crypto.randomUUID(),
+			mileage: Math.floor(Math.random() * 1000),
 			purchasable: (rand & 2) === 2,
 			rentable: (rand & 1) === 1,
 			trim: idx + 1,
@@ -831,3 +840,23 @@ const CAR_INV: CarInventory[] = TRIMS.flatMap((_, idx) => {
 });
 
 await db.insert(carInventory).values(CAR_INV).execute();
+
+/* ACCESSORY INVENTORY */
+const ACCESSORY_INV: AccessoryInventory[] = [];
+const totalAccessoriesCount =
+	FRONT_MATS.length +
+	REAR_MATS.length +
+	HOOD_DEFLECTORS.length +
+	DASHCAMS.length +
+	AIR_FRESHENERS.length;
+for (let accessoryId = 1; accessoryId <= totalAccessoriesCount; accessoryId++) {
+	// Generate 1-20 random inventory items per accessory
+	const count = Math.floor(Math.random() * 20) + 1;
+	for (let i = 0; i < count; i++) {
+		ACCESSORY_INV.push({
+			accessory: accessoryId,
+			id: crypto.randomUUID(),
+		});
+	}
+}
+await db.insert(accessoryInventory).values(ACCESSORY_INV).execute();
