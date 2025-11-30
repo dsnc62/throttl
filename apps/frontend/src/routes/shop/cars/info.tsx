@@ -10,6 +10,7 @@ import { ChevronLeftIcon, FrownIcon, ShoppingCartIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
 import { DateTimePicker } from "@/components/date-time-picker";
+import StatCard from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -582,15 +583,6 @@ function ShopCarsInfo() {
 					</TabsContent>
 				</Tabs>
 			</section>
-		</div>
-	);
-}
-
-function StatCard(props: { title: string; value: string | number }) {
-	return (
-		<div className="flex flex-col gap-1 rounded-lg border bg-card p-3">
-			<span className="text-muted-foreground">{props.title}</span>
-			<span className="font-medium text-xl">{props.value}</span>
 		</div>
 	);
 }

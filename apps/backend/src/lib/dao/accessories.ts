@@ -144,6 +144,20 @@ export async function getAccessoryManufacturers() {
 	return Array.from(unique).toSorted();
 }
 
+export async function getAccessoryById(id: number) {
+	const acc = await db.query.accessory.findFirst({
+		where: (fields, { eq }) => eq(fields.id, id),
+		with: {
+			inventories: {
+				where: (fields, { sql }) =>
+					sql`NOT EXISTS (SELECT 1 FROM accessory_order WHERE accessory_order.inventory = ${fields.id} AND accessory_order.status != 'returned')`,
+			},
+		},
+	});
+
+	return acc;
+}
+
 export async function getAccessoryCars() {
 	const xrefs = await db.query.accessoryCarXref.findMany({
 		with: {
@@ -179,4 +193,22 @@ export async function getAccessoryCars() {
 	}
 
 	return res;
+}
+
+export async function getAccessoryCarById(id: number) {
+	const xref = await db.query.accessoryCarXref.findFirst({
+		where: (fields, { eq }) => eq(fields.accessory, id),
+		with: {
+			car: {
+				columns: { id: true, model: true },
+				with: {
+					make: {
+						columns: { name: true },
+					},
+				},
+			},
+		},
+	});
+
+	return xref;
 }
