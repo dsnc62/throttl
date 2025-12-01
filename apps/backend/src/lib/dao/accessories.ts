@@ -212,3 +212,17 @@ export async function getAccessoryCarById(id: number) {
 
 	return xref;
 }
+
+export async function getAccessoriesByIds(ids: number[]) {
+	const accessories = await db.query.accessory.findMany({
+		where: (fields, { inArray }) => inArray(fields.id, ids),
+		with: {
+			inventories: {
+				where: (fields, { sql }) =>
+					sql`NOT EXISTS (SELECT 1 FROM accessory_order WHERE accessory_order.inventory = ${fields.id} AND accessory_order.status != 'returned')`,
+			},
+		},
+	});
+
+	return accessories;
+}

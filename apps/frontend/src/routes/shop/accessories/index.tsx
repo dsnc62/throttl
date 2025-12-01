@@ -135,8 +135,6 @@ function ShopAccessories() {
 		[car, category, make, navigate],
 	);
 
-	console.log(manufacturers, cars);
-
 	return (
 		<>
 			<div className="flex items-center justify-between gap-4">

@@ -2,6 +2,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { LogInIcon } from "lucide-react";
 import { ThemeToggle } from "../theme-toggle";
 import { Button } from "../ui/button";
+import CartButton from "./cart-button";
 
 export function ShopNav() {
 	const location = useLocation();
@@ -19,7 +20,7 @@ export function ShopNav() {
 					</Button>
 				</section>
 
-				<nav className="flex gap-1">
+				<nav className="flex flex-1 gap-1">
 					<Button
 						asChild
 						variant={location.pathname === "/shop" ? "secondary" : "ghost"}
@@ -47,6 +48,7 @@ export function ShopNav() {
 				</nav>
 
 				<section className="flex flex-1 items-center justify-end gap-2">
+					<CartButton />
 					<ThemeToggle />
 					<Button size="icon-lg" variant="outline">
 						<LogInIcon />

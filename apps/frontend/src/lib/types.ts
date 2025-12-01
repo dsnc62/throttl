@@ -69,3 +69,75 @@ export type AccessoryInventory = {
 	createdAt: Date;
 	orders: number;
 };
+
+/*
+ * SHOPPING CART
+ */
+
+export type BaseCartItem = {
+	id: CarInventory["id"] | Accessory["id"];
+	itemType: "car" | "accessory";
+	name: string;
+};
+
+export type BaseCarCartItem = BaseCartItem & {
+	annualKM?: number;
+	endDate?: string;
+	freq?: "weekly" | "bi-weekly" | "monthly";
+	id: CarInventory["id"];
+	itemType: "car";
+	orderType: "lease" | "finance" | "cash" | "rent";
+	startDate?: string;
+	term?: number;
+};
+
+export type PurchaseCarCartItem = BaseCarCartItem & {
+	annualKM?: number;
+	endDate?: never;
+	orderType: "lease" | "finance" | "cash";
+	startDate?: never;
+};
+
+export type FinanceCarCartItem = PurchaseCarCartItem & {
+	annualKM?: never;
+	orderType: "finance";
+	freq: "weekly" | "bi-weekly" | "monthly";
+	term: number;
+};
+
+export type LeaseCarCartItem = PurchaseCarCartItem & {
+	annualKM: number;
+	freq: "weekly" | "bi-weekly" | "monthly";
+	orderType: "lease";
+	term: number;
+};
+
+export type CashCarCartItem = PurchaseCarCartItem & {
+	freq?: never;
+	annualKM?: never;
+	orderType: "cash";
+	term?: never;
+};
+
+export type RentCarCartItem = BaseCarCartItem & {
+	endDate: string;
+	startDate: string;
+	type: "rent";
+};
+
+export type AccessoryCartItem = BaseCartItem & {
+	itemType: "accessory";
+	id: Accessory["id"];
+	qty: number;
+};
+
+export type Cart = {
+	items: (
+		| BaseCarCartItem
+		| LeaseCarCartItem
+		| FinanceCarCartItem
+		| CashCarCartItem
+		| RentCarCartItem
+		| AccessoryCartItem
+	)[];
+};

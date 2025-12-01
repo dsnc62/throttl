@@ -5,7 +5,10 @@ import {
 	stripSearchParams,
 	useNavigate,
 } from "@tanstack/react-router";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { ChevronLeftIcon, FrownIcon, ShoppingCartIcon } from "lucide-react";
+import { useCallback, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 import StatCard from "@/components/stat-card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { env } from "@/env";
-import type { Accessory, Car } from "@/lib/types";
+import type { Accessory, AccessoryCartItem, Car, Cart } from "@/lib/types";
 import { capitalize } from "@/lib/utils";
 
 const cadFormatter = Intl.NumberFormat("en-CA", {
@@ -43,6 +46,15 @@ function ShopAccessoriesInfo() {
 	const { id, qty } = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
+	const [cart, setCart] = useLocalStorage<Cart>("cart", { items: [] });
+
+	// derived
+	const isInCart = useMemo(() => {
+		return cart.items.some(
+			(item) => item.itemType === "accessory" && item.id === id,
+		);
+	}, [cart, id]);
+
 	// queries
 	const { data, isLoading } = useQuery({
 		enabled: !!id,
@@ -51,7 +63,7 @@ function ShopAccessoriesInfo() {
 
 			return (await res.json()) as Accessory;
 		},
-		queryKey: ["accessories", "info", id],
+		queryKey: ["accessories", id],
 	});
 
 	const { data: compatibility } = useQuery({
@@ -68,6 +80,46 @@ function ShopAccessoriesInfo() {
 		},
 		queryKey: ["accessories", "cars", id],
 	});
+
+	// callbacks
+	const handleAddToCart = useCallback(() => {
+		if (!data || data.inventories.length === 0) return;
+
+		if (isInCart) {
+			setCart((prev) => ({
+				items: prev.items.map((item) =>
+					item.id === id ? { ...item, qty } : item,
+				),
+			}));
+			toast.success(`${data.name} quantity updated`);
+			return;
+		}
+
+		const cartItem: AccessoryCartItem = {
+			id: data.id,
+			itemType: "accessory",
+			name: `${data.make} ${data.name}`,
+			qty,
+		};
+
+		setCart((prev) => ({ items: [...prev.items, cartItem] }));
+		toast.success(`${data.name} added to cart`);
+	}, [data, isInCart, qty, setCart, id]);
+
+	// effects
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
+	useEffect(() => {
+		if (!isInCart) return;
+
+		const item = cart.items.find(
+			(item) => item.itemType === "accessory" && item.id === id,
+		) as AccessoryCartItem | undefined;
+		if (!item) return;
+
+		if (item.qty === qty) return;
+
+		navigate({ search: { id, qty: item?.qty ?? 1 } });
+	}, [isInCart]);
 
 	// render
 	if (isLoading) {
@@ -123,20 +175,24 @@ function ShopAccessoriesInfo() {
 				</div>
 
 				<div className="flex items-center gap-3">
-					<Button className="flex-1" disabled={data.inventories.length === 0}>
+					<Button
+						className="flex-1"
+						disabled={data.inventories.length === 0}
+						onClick={handleAddToCart}
+					>
 						{data.inventories.length > 0 ? (
 							<>
 								<ShoppingCartIcon />
-								Add to Cart
+								{isInCart ? "Update" : "Add to Cart"}
 							</>
 						) : (
 							"Sold Out"
 						)}
 					</Button>
 					<Select
+						defaultValue={qty.toString()}
 						disabled={data.inventories.length === 0}
 						onValueChange={(v) => navigate({ search: { id, qty: Number(v) } })}
-						value={qty.toString()}
 					>
 						<SelectTrigger className="w-20">
 							<SelectValue />

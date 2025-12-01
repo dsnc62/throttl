@@ -1,4 +1,4 @@
-import { eq, type SQL } from "drizzle-orm";
+import { eq, inArray, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import {
 	car,
@@ -19,11 +19,12 @@ export async function getAllCars() {
 
 export async function getCarInventory(opts?: {
 	filters?: {
-		make?: number;
-		color?: string;
-		size?: string;
 		carClass?: string;
+		color?: string;
 		fuel?: string;
+		ids?: string[];
+		make?: number;
+		size?: string;
 		xwd?: string;
 	};
 	limit?: number;
@@ -97,10 +98,15 @@ export async function getCarInventory(opts?: {
 					return fields.id;
 			}
 		},
-		where: (fields, { or, eq, and, exists }) => {
+		where: (fields, { or, eq, and, exists, inArray }) => {
 			const base = or(fields.purchasable, fields.rentable);
 
-			if (!opts?.filters) {
+			let idFilter: SQL<unknown> | undefined;
+			if (opts?.ids && opts.ids.length > 0) {
+				idFilter = inArray(fields.id, opts.ids);
+			}
+
+			if (!opts?.filters && !idFilter) {
 				return base;
 			}
 
@@ -145,7 +151,7 @@ export async function getCarInventory(opts?: {
 					),
 			);
 
-			return and(base, colorFilter, otherFilters);
+			return and(base, idFilter, colorFilter, otherFilters);
 		},
 		with: {
 			trim: {

@@ -22,12 +22,6 @@ app.get("/", async (c) => {
 	return c.json(accessories, 200);
 });
 
-app.get("/:id", async (c) => {
-	const id = Number(c.req.param("id"));
-	const accessory = await getAccessoryById(id);
-	return c.json(accessory, 200);
-});
-
 app.get("/inventory", async (c) => {
 	const { limit, offset } = c.req.query();
 	const accessories = await getAccessoryInventory({
@@ -45,6 +39,13 @@ app.get("/manufacturers", async (c) => {
 app.get("/cars", async (c) => {
 	const cars = await getAccessoryCars();
 	return c.json(cars, 200);
+});
+
+app.get("/:id", async (c) => {
+	const id = Number(c.req.param("id"));
+
+	const accessory = await getAccessoryById(id);
+	return c.json(accessory, 200);
 });
 
 app.get("/cars/:id", async (c) => {

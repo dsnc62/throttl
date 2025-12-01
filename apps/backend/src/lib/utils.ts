@@ -1,17 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { CAR_PURCHASE_FEES } from "./constants";
-
-export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
-}
-
-export function capitalize(text: string) {
-	return text
-		.split(" ")
-		.map((t) => t[0].toUpperCase() + t.slice(1))
-		.join(" ");
-}
 
 export function calcTotalCarPrice(
 	initialPrice: number,
@@ -137,16 +124,4 @@ export function calcLeasePrice(
 	const price = pricePerKM * (1 + ratio) * (annualkm ?? 20000) * age; // estimated multiplier based on similar Camry on Toyota's site
 
 	return price;
-}
-
-export function pluralize(
-	amount: number,
-	unit: string,
-	opts?: { suffix?: string },
-) {
-	if (amount === 1) {
-		return `${amount} ${unit}`;
-	}
-
-	return `${amount} ${unit}${opts?.suffix ?? "s"}`;
 }

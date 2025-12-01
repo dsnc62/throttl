@@ -5,9 +5,11 @@ import {
 	stripSearchParams,
 	useNavigate,
 } from "@tanstack/react-router";
+import { useLocalStorage } from "@uidotdev/usehooks";
 import { addDays, differenceInDays } from "date-fns";
 import { ChevronLeftIcon, FrownIcon, ShoppingCartIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 import { DateTimePicker } from "@/components/date-time-picker";
 import StatCard from "@/components/stat-card";
@@ -26,17 +28,17 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { env } from "@/env";
-import type { CarInventory } from "@/lib/types";
+import { DEFAULT_FINANCE_RATE, DEFAULT_LEASE_RATE } from "@/lib/constants";
+import type { BaseCarCartItem, CarInventory, Cart } from "@/lib/types";
 import {
-	calcDepreciatedValue,
+	calcLeasePrice,
 	calcLoanPayments,
+	calcTotalCarPrice,
 	calculateRent,
 	capitalize,
+	pluralize,
 } from "@/lib/utils";
 
-const DEFAULT_FINANCE_RATE = 5.99;
-const DEFAULT_LEASE_RATE = 6.69;
-const FEES = 1860 + 100 + 22 + 1.08 + 22.5; // dest + ac + omvic + env handling fee + tire levy
 const LEASE_TERMS = [24, 28, 36, 40, 48, 52, 60, 64] as const;
 const FINANCE_TERMS = [36, 48, 60, 72, 84] as const;
 
@@ -78,6 +80,9 @@ function ShopCarsInfo() {
 		Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
+	// local storage
+	const [cart, setCart] = useLocalStorage<Cart>("cart", { items: [] });
+
 	// queries
 	const { data, isLoading } = useQuery({
 		queryFn: async () => {
@@ -106,25 +111,27 @@ function ShopCarsInfo() {
 	});
 
 	// derived
+	const isInCart = useMemo(() => {
+		if (!data) return false;
+
+		return cart.items.some((i) => i.itemType === "car" && i.id === data?.id);
+	}, [cart, data]);
+
 	const rentPrice = useMemo(() => {
 		if (!data) return 0;
 
-		return calculateRent(
-			data.trim.price,
-			differenceInDays(endDate, startDate),
-			data.trim.car.estLifespanKM,
+		return (
+			calculateRent(
+				data.trim.price,
+				differenceInDays(endDate, startDate),
+				data.trim.car.estLifespanKM,
+			) * 1.13
 		);
 	}, [data, endDate, startDate]);
 
 	const totalPrice = useMemo(() => {
 		if (!data) return 0;
-
-		const actualPrice = calcDepreciatedValue(
-			data.trim.price,
-			Math.max(0, today.getFullYear() - data.trim.car.year),
-			data.mileage,
-		);
-		return (actualPrice + FEES) * 1.13;
+		return calcTotalCarPrice(data.trim.price, data.trim.car.year, data.mileage);
 	}, [data]);
 
 	const financeTerm = useMemo(() => {
@@ -160,16 +167,12 @@ function ShopCarsInfo() {
 			return 0;
 		}
 
-		const age = leaseTerm / 12;
-		const depreciation = calcDepreciatedValue(
+		const price = calcLeasePrice(
 			totalPrice,
-			age,
-			(annualkm ?? 20000) * age,
+			leaseTerm,
+			annualkm ?? 20000,
+			data?.trim.car.estLifespanKM ?? 1,
 		);
-		const ratio = depreciation / totalPrice; // add a depreciation factor to the price
-
-		const pricePerKM = totalPrice / (data?.trim.car.estLifespanKM ?? 1); // take off 5% of value because $$$
-		const price = pricePerKM * (1 + ratio) * (annualkm ?? 20000) * age; // estimated multiplier based on similar Camry on Toyota's site
 
 		const loan = calcLoanPayments(
 			price,
@@ -209,6 +212,45 @@ function ShopCarsInfo() {
 		},
 		[endDate, freq, id, navigate, rate, startDate, tab, term],
 	);
+
+	const handleOrder = useCallback(() => {
+		if (!data || isInCart) return;
+
+		const orderType = tab ?? (data.purchasable ? "lease" : "rent");
+		const item = {
+			annualKM: orderType === "lease" ? (annualkm ?? 20000) : undefined,
+			endDate,
+			freq:
+				orderType === "finance" || orderType === "lease"
+					? (freq ?? "weekly")
+					: undefined,
+			id: data.id,
+			itemType: "car",
+			name: `${data.trim.car.year} ${data.trim.car.make.name} ${data.trim.car.model} ${data.trim.name}`,
+			orderType,
+			startDate,
+			term:
+				orderType === "finance"
+					? financeTerm
+					: orderType === "lease"
+						? leaseTerm
+						: undefined,
+		} satisfies BaseCarCartItem;
+
+		setCart((prev) => ({ items: [...prev.items, item] }));
+		toast.success("Order added to cart");
+	}, [
+		annualkm,
+		data,
+		endDate,
+		financeTerm,
+		freq,
+		isInCart,
+		leaseTerm,
+		setCart,
+		startDate,
+		tab,
+	]);
 
 	// render
 	if (isLoading) {
@@ -269,20 +311,16 @@ function ShopCarsInfo() {
 					<StatCard title="Mileage" value={`${data.mileage}KM`} />
 				</div>
 			</section>
+
+			{/* PRICE DETAILS */}
 			<section className="h-fit min-w-80 flex-2 shrink-0 rounded-xl border bg-card p-4">
 				<Tabs
-					defaultValue={
-						data.purchasable
-							? tab !== "rent"
-								? (tab ?? "lease")
-								: "lease"
-							: "rent"
-					}
-					onValueChange={(v) =>
+					defaultValue={tab ?? (data.purchasable ? "lease" : "rent")}
+					onValueChange={async (v) => {
 						navigate({
 							search: { id, tab: v as "lease" | "finance" | "cash" | "rent" },
-						})
-					}
+						});
+					}}
 				>
 					<TabsList className="w-full">
 						{data.purchasable && (
@@ -292,7 +330,14 @@ function ShopCarsInfo() {
 								<TabsTrigger value="cash">Cash</TabsTrigger>
 							</>
 						)}
-						{data.rentable && <TabsTrigger value="rent">Rent</TabsTrigger>}
+						{data.rentable && (
+							<TabsTrigger
+								onClick={() => navigate({ search: { id, tab: "rent" } })}
+								value="rent"
+							>
+								Rent
+							</TabsTrigger>
+						)}
 					</TabsList>
 					<TabsContent className="flex flex-col gap-3" value="lease">
 						<div className="border-b py-3">
@@ -422,11 +467,6 @@ function ShopCarsInfo() {
 								/>
 							</div>
 						</div>
-						<Separator />
-						<Button>
-							<ShoppingCartIcon />
-							Order
-						</Button>
 					</TabsContent>
 					<TabsContent className="flex flex-col gap-3" value="finance">
 						<div className="border-b py-3">
@@ -524,14 +564,9 @@ function ShopCarsInfo() {
 								</RadioGroup>
 							</div>
 						</div>
-						<Separator />
-						<Button>
-							<ShoppingCartIcon />
-							Order
-						</Button>
 					</TabsContent>
 					<TabsContent className="flex flex-col gap-3" value="cash">
-						<div className="border-b py-3">
+						<div className="pt-3">
 							<h2 className="font-display font-semibold text-3xl">
 								{cadFormatter.format(totalPrice)}
 							</h2>
@@ -539,10 +574,6 @@ function ShopCarsInfo() {
 								Includes Fees and Taxes
 							</span>
 						</div>
-						<Button>
-							<ShoppingCartIcon />
-							Order
-						</Button>
 					</TabsContent>
 					<TabsContent className="flex flex-col gap-3" value="rent">
 						<div className="border-b py-3">
@@ -550,7 +581,8 @@ function ShopCarsInfo() {
 								{cadFormatter.format(rentPrice)}
 							</h2>
 							<span className="text-muted-foreground">
-								for {differenceInDays(endDate, startDate)} day (incl. taxes)
+								for {pluralize(differenceInDays(endDate, startDate), "day")}{" "}
+								(incl. taxes)
 							</span>
 						</div>
 						<div>
@@ -575,13 +607,23 @@ function ShopCarsInfo() {
 								timeLabel="Return Time"
 							/>
 						</div>
-						<Separator />
-						<Button disabled={differenceInDays(endDate, startDate) <= 0}>
-							<ShoppingCartIcon />
-							Order
-						</Button>
 					</TabsContent>
 				</Tabs>
+				<Separator className="my-3" />
+				<Button
+					className="w-full"
+					disabled={isInCart || differenceInDays(endDate, startDate) <= 0}
+					onClick={handleOrder}
+				>
+					{isInCart ? (
+						"Ordered"
+					) : (
+						<>
+							<ShoppingCartIcon />
+							Order
+						</>
+					)}
+				</Button>
 			</section>
 		</div>
 	);
