@@ -100,10 +100,10 @@ function ShopCart() {
 				headers: { "Content-Type": "application/json" },
 				method: "POST",
 			});
-			const data = await res.json();
-			return data.total as number;
+			const data = (await res.json()) as { total: number };
+			return data;
 		},
-		queryKey: ["cart", "total", JSON.stringify(cart)],
+		queryKey: ["cart", "total"],
 	});
 
 	// callbacks
@@ -132,6 +132,14 @@ function ShopCart() {
 			<section className="@container/cart-details flex-3">
 				<h1 className="mb-4 font-display font-semibold text-5xl">My Cart</h1>
 				<div className="grid gap-3 xl:grid-cols-2">
+					{cart.items.length === 0 && (
+						<div className="text-muted-foreground">
+							There's nothing here.
+							<Button asChild className="w-fit px-2" variant="link">
+								<Link to="/shop">Return to Shop?</Link>
+							</Button>
+						</div>
+					)}
 					{cart.items.map((i) => {
 						if (i.itemType === "car") {
 							const data = cars?.find((c) => c.id === i.id);
@@ -174,7 +182,7 @@ function ShopCart() {
 								{isLoadingCartTotal ? (
 									<Spinner />
 								) : (
-									cadFormatter.format((cartTotal ?? 0) / 1.13)
+									cadFormatter.format((cartTotal?.total ?? 0) / 1.13)
 								)}
 							</span>
 						</div>
@@ -185,7 +193,7 @@ function ShopCart() {
 									<Spinner />
 								) : (
 									cadFormatter.format(
-										(cartTotal ?? 0) - (cartTotal ?? 0) / 1.13,
+										(cartTotal?.total ?? 0) - (cartTotal?.total ?? 0) / 1.13,
 									)
 								)}
 							</span>
@@ -196,14 +204,18 @@ function ShopCart() {
 								{isLoadingCartTotal ? (
 									<Spinner />
 								) : (
-									cadFormatter.format(cartTotal ?? 0)
+									cadFormatter.format(cartTotal?.total ?? 0)
 								)}
 							</span>
 						</div>
 					</div>
 				</div>
-				<Button className="mt-4 w-full" disabled={!cartTotal}>
-					Checkout
+				<Button
+					asChild={!!cartTotal?.total}
+					className="mt-4 w-full"
+					disabled={!cartTotal?.total}
+				>
+					<Link to="/shop/checkout">Checkout</Link>
 				</Button>
 			</section>
 		</div>
