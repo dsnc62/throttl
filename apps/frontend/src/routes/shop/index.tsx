@@ -12,6 +12,7 @@ import {
 import { env } from "@/env";
 import type { Accessory, CarInventory } from "@/lib/types";
 import { calculateRent, capitalize } from "@/lib/utils";
+import CarCard from "@/components/car-card";
 
 export const Route = createFileRoute("/shop/")({
 	component: Shop,
@@ -50,70 +51,7 @@ function Shop() {
 
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 					{carInventory?.map((inv) => {
-						const car = inv.trim.car;
-
-						return (
-							<Card key={`car-inv-${inv.id}`}>
-								<CardHeader>
-									<img
-										alt={`${car.year} ${car.make.name} ${car.model}`}
-										className="aspect-video rounded-lg"
-										src=""
-									/>
-									<div className="flex items-start justify-between gap-3">
-										<CardTitle>
-											{car.year} {car.make.name} {car.model} {inv.trim.name}
-										</CardTitle>
-
-										{inv.purchasable ? (
-											<span className="leading-none">
-												{Intl.NumberFormat("en-CA", {
-													currency: "CAD",
-													maximumFractionDigits: 0,
-													style: "currency",
-												}).format(inv.trim.price)}
-											</span>
-										) : (
-											<span className="leading-none">
-												{Intl.NumberFormat("en-CA", {
-													currency: "CAD",
-													maximumFractionDigits: 0,
-													style: "currency",
-												}).format(
-													calculateRent(
-														inv.trim.price,
-														1,
-														inv.trim.car.estLifespanKM,
-													),
-												)}
-												/day
-											</span>
-										)}
-									</div>
-									<CardDescription className="flex items-center">
-										<div
-											className="mr-1 size-3 rounded-full border border-foreground/30"
-											style={{
-												backgroundColor: inv.color.replaceAll(" ", ""),
-											}}
-										></div>
-										{capitalize(inv.color)} • {inv.trim.xwd.toUpperCase()} •{" "}
-										{inv.purchasable ? inv.mileage : "Unlimited "}KM
-									</CardDescription>
-									<div className="flex items-center gap-2">
-										{inv.purchasable && <Badge>Purchasable</Badge>}
-										{inv.rentable && <Badge variant="outline">Rentable</Badge>}
-									</div>
-								</CardHeader>
-								<CardFooter className="mt-auto items-center justify-end gap-3">
-									<Button variant="secondary">
-										<Link search={{ id: inv.id }} to="/shop/cars/info">
-											Learn More
-										</Link>
-									</Button>
-								</CardFooter>
-							</Card>
-						);
+						return <CarCard inv={inv} key={`car-inv-${inv.id}`} />;
 					})}
 				</div>
 			</section>

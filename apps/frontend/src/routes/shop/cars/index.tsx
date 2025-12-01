@@ -8,15 +8,8 @@ import {
 import { FrownIcon, RotateCcwIcon } from "lucide-react";
 import { useCallback } from "react";
 import z from "zod";
-import { Badge } from "@/components/ui/badge";
+import CarCard from "@/components/car-card";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import {
 	Select,
 	SelectContent,
@@ -29,7 +22,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { env } from "@/env";
 import type { CarInventory, CarMake } from "@/lib/types";
-import { calculateRent, capitalize } from "@/lib/utils";
+import { capitalize } from "@/lib/utils";
 
 const COLORS = [
 	"black",
@@ -340,70 +333,7 @@ function ShopCars() {
 			{data && data.length > 0 ? (
 				<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
 					{data.map((inv) => {
-						const car = inv.trim.car;
-
-						return (
-							<Card key={`car-inv-${inv.id}`}>
-								<CardHeader>
-									<img
-										alt={`${car.year} ${car.make.name} ${car.model}`}
-										className="aspect-video rounded-lg"
-										src=""
-									/>
-									<div className="flex items-start justify-between gap-3">
-										<CardTitle>
-											{car.year} {car.make.name} {car.model} {inv.trim.name}
-										</CardTitle>
-
-										{inv.purchasable ? (
-											<span className="leading-none">
-												{Intl.NumberFormat("en-CA", {
-													currency: "CAD",
-													maximumFractionDigits: 0,
-													style: "currency",
-												}).format(inv.trim.price)}
-											</span>
-										) : (
-											<span className="leading-none">
-												{Intl.NumberFormat("en-CA", {
-													currency: "CAD",
-													maximumFractionDigits: 0,
-													style: "currency",
-												}).format(
-													calculateRent(
-														inv.trim.price,
-														1,
-														inv.trim.car.estLifespanKM,
-													),
-												)}
-												/day
-											</span>
-										)}
-									</div>
-									<CardDescription className="flex items-center">
-										<div
-											className="mr-1 size-3 rounded-full border border-foreground/30"
-											style={{
-												backgroundColor: inv.color.replaceAll(" ", ""),
-											}}
-										/>
-										{capitalize(inv.color)} • {inv.trim.xwd.toUpperCase()} •{" "}
-										{inv.purchasable ? inv.mileage : "Unlimited "}KM
-									</CardDescription>
-									<div className="flex items-center gap-2">
-										{inv.purchasable && <Badge>Purchasable</Badge>}
-										{inv.rentable && <Badge variant="outline">Rentable</Badge>}
-									</div>
-								</CardHeader>
-								<CardFooter className="mt-auto items-center justify-end gap-3">
-									<Button variant="secondary">
-										<Link search={{ id: inv.id }} to="/shop/cars/info">
-											Learn More
-										</Link>
-									</Button>
-								</CardFooter>
-							</Card>
-						);
+						return <CarCard inv={inv} key={`car-inv-${inv.id}`} />;
 					})}
 				</div>
 			) : isLoading ? (

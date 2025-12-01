@@ -355,7 +355,7 @@ function CarItemCard(props: {
 				<img
 					alt={`${car.year} ${car.make.name} ${car.model}`}
 					className="aspect-video rounded-lg"
-					src=""
+					src={car.image ?? "/images/No_car.png"}
 				/>
 				<div className="flex items-start justify-between gap-3">
 					<CardTitle>
