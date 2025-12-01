@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LogInIcon } from "lucide-react";
+import AuthDropdown from "../auth-dropdown";
 import { ThemeToggle } from "../theme-toggle";
 import { Button } from "../ui/button";
 import CartButton from "./cart-button";
@@ -50,9 +50,7 @@ export function ShopNav() {
 				<section className="flex flex-1 items-center justify-end gap-2">
 					<CartButton />
 					<ThemeToggle />
-					<Button size="icon-lg" variant="outline">
-						<LogInIcon />
-					</Button>
+					<AuthDropdown />
 				</section>
 			</div>
 		</header>

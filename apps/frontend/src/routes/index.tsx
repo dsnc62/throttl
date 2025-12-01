@@ -3,12 +3,15 @@ import { CarIcon, ChevronRightIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 const KEYS = Array.from(Array(22).keys());
 
 function Home() {
+	const session = authClient.useSession();
+
 	return (
 		<main className="flex h-dvh w-screen select-none flex-col items-center justify-between overflow-hidden">
 			<header>
@@ -48,10 +51,14 @@ function Home() {
 							<ChevronRightIcon className="-mr-2 right-4 size-0 transition-all group-hover:mr-0 group-hover:size-4 group-hover:scale-100" />
 						</Link>
 					</Button>
-					<Button className="group" size="lg" variant="secondary">
-						Sign Up
-						<ChevronRightIcon className="-mr-2 right-4 size-0 transition-all group-hover:mr-0 group-hover:size-4 group-hover:scale-100" />
-					</Button>
+					{!session.data && (
+						<Button asChild className="group" size="lg" variant="secondary">
+							<Link to="/sign-up">
+								Sign Up
+								<ChevronRightIcon className="-mr-2 right-4 size-0 transition-all group-hover:mr-0 group-hover:size-4 group-hover:scale-100" />
+							</Link>
+						</Button>
+					)}
 				</div>
 			</section>
 			<footer>

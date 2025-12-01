@@ -7,16 +7,32 @@ import cart from "@/routes/cart";
 
 const app = new Hono();
 
+const origin = process.env.DATABASE_URL.includes("http://")
+	? "http://localhost:3000"
+	: "*";
+
+app.use(
+	"/api/auth/*",
+	cors({
+		allowHeaders: ["Authorization", "Content-Type"],
+		allowMethods: ["POST", "GET", "OPTIONS"],
+		credentials: true,
+		exposeHeaders: ["Content-Length"],
+		maxAge: 6000,
+		origin,
+	}),
+);
+
 app.use(
 	"/api/*",
 	cors({
 		allowHeaders: [
-			"Access-Control-Allow-Origin",
 			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Origin",
 			"Content-Type",
 		],
 		allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-		origin: "*",
+		origin,
 	}),
 );
 
