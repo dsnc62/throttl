@@ -15,6 +15,13 @@
       "when": 1763354519620,
       "tag": "0001_eager_vampiro",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1764563550296,
+      "tag": "0002_big_firedrake",
+      "breakpoints": true
     }
   ]
 }

@@ -27,6 +27,7 @@ export const ENUM_STATUS = [
 export const accessory = sqliteTable("accessory", {
 	category: text("category", { enum: ENUM_CAT }).notNull(),
 	id: integer("id").primaryKey(),
+	image: text("image"),
 	make: text("make").notNull(),
 	name: text("name").notNull(),
 	price: real("price").notNull(),

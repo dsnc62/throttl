@@ -61,6 +61,7 @@ export const car = sqliteTable(
 		estLifespanKM: integer("est_lifespan_km").notNull(),
 		generation: real("generation").notNull(),
 		id: integer("id").primaryKey(),
+		image: text("image"),
 		make: integer("make")
 			.references(() => carManufacturer.id)
 			.notNull(),

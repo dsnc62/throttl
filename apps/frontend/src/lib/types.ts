@@ -22,6 +22,7 @@ export type Car = {
 	generation: number;
 	id: number;
 	make: number & CarMake;
+	image: string | null;
 	model: string;
 	seats: number;
 	size: "compact" | "mid-size" | "large" | null;
@@ -50,6 +51,7 @@ export type Accessory = {
 		| "exterior protection"
 		| "mats";
 	id: number;
+	image: string | null;
 	make: string;
 	name: string;
 	price: number;
