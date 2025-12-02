@@ -54,6 +54,10 @@ export const ENUM_STATUS = [
 
 export const ENUM_XWD = ["fwd", "rwd", "awd", "4wd"] as const;
 
+export const ENUM_CAR_ORDER_TYPE = ["purchase", "rent"] as const;
+export const ENUM_CAR_PURCHASE_TYPE = ["lease", "finance", "cash"] as const;
+export const ENUM_FREQ = ["weekly", "bi-weekly", "monthly"] as const;
+
 export const car = sqliteTable(
 	"car",
 	{
@@ -128,6 +132,9 @@ export const carInventory = sqliteTable("car_inventory", {
 export const carOrder = sqliteTable(
 	"car_order",
 	{
+		cardExpMonth: text("card_exp_month").notNull(),
+		cardExpYear: text("card_exp_year").notNull(),
+		cardLast4: text("card_last4").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -137,7 +144,9 @@ export const carOrder = sqliteTable(
 			.references(() => carInventory.id),
 		kmDriven: integer("km_driven"),
 		maxMileage: integer("max_mileage"),
+		orderType: text("order_type", { enum: ENUM_CAR_ORDER_TYPE }).notNull(),
 		ownershipExpiry: integer("ownership_expiry", { mode: "timestamp_ms" }),
+		shippingAddress: text("shipping_address").notNull(),
 		status: text("status", { enum: ENUM_STATUS }).notNull().default("returned"),
 		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 			.notNull()
@@ -152,6 +161,30 @@ export const carOrder = sqliteTable(
 			.where(sql`${t.status} != 'returned'`),
 	],
 );
+
+export const carPurchaseDetails = sqliteTable("car_purchase_details", {
+	annualKM: integer("annual_km"),
+	createdAt: integer("created_at", { mode: "timestamp_ms" })
+		.notNull()
+		.default(sql`(current_timestamp)`),
+	freq: text("freq", { enum: ENUM_FREQ }),
+	id: text("id").primaryKey(),
+	order: text("order")
+		.notNull()
+		.references(() => carOrder.id),
+	purchaseType: text("purchase_type", {
+		enum: ENUM_CAR_PURCHASE_TYPE,
+	}).notNull(),
+	rate: real("rate"),
+	term: integer("term"),
+	totalPrice: real("total_price").notNull(),
+	updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+		.notNull()
+		.default(sql`(current_timestamp)`),
+	user: text("user")
+		.notNull()
+		.references(() => user.id),
+});
 
 export const carRelations = relations(car, ({ one, many }) => ({
 	make: one(carManufacturer, {

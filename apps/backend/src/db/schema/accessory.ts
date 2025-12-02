@@ -60,12 +60,16 @@ export const accessoryInventory = sqliteTable("accessory_inventory", {
 export const accessoryOrder = sqliteTable(
 	"accessory_order",
 	{
+		cardExpMonth: text("card_exp_month").notNull(),
+		cardExpYear: text("card_exp_year").notNull(),
+		cardLast4: text("card_last4").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
 		inventory: text("inventory")
 			.notNull()
 			.references(() => accessoryInventory.id),
+		shippingAddress: text("shipping_address").notNull(),
 		status: text("status", { enum: ENUM_STATUS }).notNull().default("rented"),
 		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 			.notNull()

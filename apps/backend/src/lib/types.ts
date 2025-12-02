@@ -65,3 +65,27 @@ export type Cart = {
 		| AccessoryCartItem
 	)[];
 };
+
+export type OrderDetails = {
+	address: string;
+	cardNumber: string;
+	city: string;
+	user: string;
+	expMonth: number;
+	expYear: number;
+	postalCode: string;
+	province:
+		| "AB"
+		| "BC"
+		| "MB"
+		| "NB"
+		| "NL"
+		| "NT"
+		| "NS"
+		| "NU"
+		| "ON"
+		| "PE"
+		| "QC"
+		| "SK"
+		| "YT";
+};

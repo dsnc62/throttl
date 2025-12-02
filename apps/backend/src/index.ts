@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import accessories from "@/routes/accessories";
 import cars from "@/routes/cars";
 import cart from "@/routes/cart";
+import order from "@/routes/orders";
 
 const app = new Hono();
 
@@ -45,5 +46,6 @@ app.on(["GET", "POST"], "/api/auth/*", (c) => auth.handler(c.req.raw));
 app.route("/api/accessories", accessories);
 app.route("/api/cars", cars);
 app.route("/api/cart", cart);
+app.route("/api/orders", order);
 
 export default app;
