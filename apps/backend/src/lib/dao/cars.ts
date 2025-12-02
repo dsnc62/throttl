@@ -1,7 +1,8 @@
-import { eq, inArray, type SQL } from "drizzle-orm";
+import { eq, ne, not, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import {
 	car,
+	carOrder,
 	carTrim,
 	type ENUM_CLASS,
 	type ENUM_FUEL,
@@ -26,6 +27,7 @@ export async function getCarInventory(opts?: {
 		make?: number;
 		size?: string;
 		xwd?: string;
+		includeOrdered?: boolean;
 	};
 	limit?: number;
 	offset?: number;
@@ -101,57 +103,77 @@ export async function getCarInventory(opts?: {
 		where: (fields, { or, eq, and, exists, inArray }) => {
 			const base = or(fields.purchasable, fields.rentable);
 
-			let idFilter: SQL<unknown> | undefined;
-			if (opts?.ids && opts.ids.length > 0) {
-				idFilter = inArray(fields.id, opts.ids);
+			let orderedFilter: SQL<unknown> | undefined;
+			if (opts?.filters?.includeOrdered !== true) {
+				orderedFilter = not(
+					exists(
+						db
+							.select()
+							.from(carOrder)
+							.where(
+								and(
+									eq(carOrder.inventory, fields.id),
+									ne(carOrder.status, "returned"),
+								),
+							),
+					),
+				);
 			}
 
-			if (!opts?.filters && !idFilter) {
-				return base;
+			let idFilter: SQL<unknown> | undefined;
+			if (opts?.filters?.ids && opts.filters.ids.length > 0) {
+				idFilter = inArray(fields.id, opts.filters?.ids);
 			}
 
 			let colorFilter: SQL<unknown> | undefined;
-			if (opts.filters.color) {
+			if (opts?.filters?.color) {
 				colorFilter = eq(fields.color, opts.filters.color);
 			}
 
-			const f = opts.filters;
-			const otherFilters = exists(
-				db
-					.select()
-					.from(carTrim)
-					.innerJoin(car, eq(car.id, carTrim.car))
-					.where(
-						and(
-							eq(carTrim.id, fields.trim),
+			let otherFilters: SQL<unknown> | undefined;
+			if (opts?.filters) {
+				const f = opts.filters;
+				otherFilters = exists(
+					db
+						.select()
+						.from(carTrim)
+						.innerJoin(car, eq(car.id, carTrim.car))
+						.where(
+							and(
+								eq(carTrim.id, fields.trim),
 
-							// fuel filter
-							f.fuel
-								? eq(carTrim.fuel, f.fuel as (typeof ENUM_FUEL)[number])
-								: undefined,
+								// fuel filter
+								f.fuel
+									? eq(carTrim.fuel, f.fuel as (typeof ENUM_FUEL)[number])
+									: undefined,
 
-							// xwd filter
-							f.xwd
-								? eq(carTrim.xwd, f.xwd as (typeof ENUM_XWD)[number])
-								: undefined,
+								// xwd filter
+								f.xwd
+									? eq(carTrim.xwd, f.xwd as (typeof ENUM_XWD)[number])
+									: undefined,
 
-							// class filter
-							f.carClass
-								? eq(car.class, f.carClass as (typeof ENUM_CLASS)[number])
-								: undefined,
+								// class filter
+								f.carClass
+									? eq(car.class, f.carClass as (typeof ENUM_CLASS)[number])
+									: undefined,
 
-							// make filter
-							f.make ? eq(car.make, f.make) : undefined,
+								// make filter
+								f.make ? eq(car.make, f.make) : undefined,
 
-							// size filter
-							f.size
-								? eq(car.size, f.size as (typeof ENUM_SIZE)[number])
-								: undefined,
+								// size filter
+								f.size
+									? eq(car.size, f.size as (typeof ENUM_SIZE)[number])
+									: undefined,
+							),
 						),
-					),
-			);
+				);
+			}
 
-			return and(base, idFilter, colorFilter, otherFilters);
+			return and(
+				...[base, orderedFilter, idFilter, colorFilter, otherFilters].filter(
+					Boolean,
+				),
+			);
 		},
 		with: {
 			trim: {
@@ -169,9 +191,35 @@ export async function getCarInventory(opts?: {
 	return inv;
 }
 
-export async function getCarFromInventory(id: string) {
+export async function getCarFromInventory(
+	id: string,
+	opts: {
+		filters?: {
+			includeOrdered?: boolean;
+		};
+	},
+) {
 	const car = await db.query.carInventory.findFirst({
-		where: (fields, { eq }) => eq(fields.id, id),
+		where: (fields, { eq, and, not, exists, ne }) => {
+			const base = eq(fields.id, id);
+			let orderedFilter: SQL<unknown> | undefined;
+			if (!opts?.filters?.includeOrdered) {
+				orderedFilter = not(
+					exists(
+						db
+							.select()
+							.from(carOrder)
+							.where(
+								and(
+									eq(carOrder.inventory, fields.id),
+									ne(carOrder.status, "returned"),
+								),
+							),
+					),
+				);
+			}
+			return and(base, orderedFilter);
+		},
 		with: {
 			trim: {
 				with: {
