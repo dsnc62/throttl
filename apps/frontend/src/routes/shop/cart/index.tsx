@@ -103,7 +103,7 @@ function ShopCart() {
 			const data = (await res.json()) as { total: number };
 			return data;
 		},
-		queryKey: ["cart", "total"],
+		queryKey: ["cart", "total", JSON.stringify(cart)],
 	});
 
 	// callbacks
@@ -237,8 +237,17 @@ function AccessoryItemCard(props: {
 
 	return (
 		<Card>
+			<div className="-mt-6 -mb-4 p-2">
+				<img
+					alt={`${item.name} by ${data.make}`}
+					className="aspect-video w-full rounded-lg border bg-secondary object-cover"
+					onError={(ev) => {
+						ev.currentTarget.src = "/images/Missing-image.png";
+					}}
+					src={data.image ?? "Missing-image.png"}
+				/>
+			</div>
 			<CardHeader>
-				<img alt={item.name} className="aspect-video rounded-lg" src="" />
 				<div className="flex items-start justify-between gap-3">
 					<CardTitle>
 						{data.make} {data.name}
@@ -363,12 +372,17 @@ function CarItemCard(props: {
 
 	return (
 		<Card>
-			<CardHeader>
+			<div className="-mt-6 -mb-4 p-2">
 				<img
 					alt={`${car.year} ${car.make.name} ${car.model}`}
-					className="aspect-video rounded-lg"
+					className="aspect-video w-full rounded-lg border bg-secondary object-cover"
+					onError={(ev) => {
+						ev.currentTarget.src = "/images/No_car.png";
+					}}
 					src={car.image ?? "/images/No_car.png"}
 				/>
+			</div>
+			<CardHeader>
 				<div className="flex items-start justify-between gap-3">
 					<CardTitle>
 						{car.year} {car.make.name} {car.model} {props.data.trim.name}
