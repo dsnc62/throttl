@@ -14,8 +14,8 @@
 	},
 	"dependencies": {
 		"@libsql/client": "^0.15.15",
-		"better-auth": "^1.4.4",
-		"date-fns": "^4.1.0",
+		"better-auth": "catalog:",
+		"date-fns": "catalog:",
 		"dotenv": "^17.2.3",
 		"drizzle-orm": "^0.44.7",
 		"drizzle-zod": "^0.8.3",
