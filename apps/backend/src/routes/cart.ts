@@ -9,6 +9,7 @@ import type {
 	RentCarCartItem,
 } from "@/lib/types";
 import {
+	calcCartTotal,
 	calcLeasePrice,
 	calcLoanPayments,
 	calcTotalCarPrice,
@@ -57,87 +58,7 @@ app.post("/total", async (c) => {
 		return c.json({ error: "Invalid cart data" }, 400);
 	}
 
-	const carIds = cart.items
-		.filter((item) => item.itemType === "car")
-		.map((item) => item.id);
-
-	const accessoryIds = cart.items
-		.filter((item) => item.itemType === "accessory")
-		.map((item) => item.id);
-
-	const [cars, accessories] = await Promise.all([
-		carIds.length > 0
-			? getCarInventory({ filters: { ids: carIds } })
-			: Promise.resolve([]),
-		accessoryIds.length > 0
-			? getAccessoriesByIds(accessoryIds)
-			: Promise.resolve([]),
-	]);
-
-	let total = 0;
-
-	for (const item of cart.items) {
-		if (item.itemType === "accessory") {
-			const accessory = accessories.find((a) => a.id === item.id);
-			if (accessory) {
-				total += accessory.price * item.qty * 1.13;
-			}
-
-			continue;
-		}
-
-		const car = cars.find((c) => c.id === item.id);
-		if (car) {
-			const basePrice = calcTotalCarPrice(
-				car.trim.price,
-				car.trim.car.year,
-				car.mileage,
-			);
-			if (item.orderType === "cash") {
-				total += basePrice;
-				continue;
-			}
-
-			if (item.orderType === "rent") {
-				const typedItem = item as RentCarCartItem;
-				const days = Math.ceil(
-					(new Date(typedItem.endDate).getTime() -
-						new Date(typedItem.startDate).getTime()) /
-						(1000 * 60 * 60 * 24),
-				);
-				total +=
-					calculateRent(car.trim.price, days, car.trim.car.estLifespanKM) *
-					1.13;
-
-				continue;
-			}
-
-			if (item.orderType === "finance") {
-				const typedItem = item as FinanceCarCartItem;
-				const loan = calcLoanPayments(
-					basePrice,
-					DEFAULT_FINANCE_RATE,
-					typedItem.term / 12,
-				);
-				total += loan[typedItem.freq];
-				continue;
-			}
-
-			const typedItem = item as LeaseCarCartItem;
-			const leasePrice = calcLeasePrice(
-				basePrice,
-				typedItem.term,
-				typedItem.annualKM,
-				car.trim.car.estLifespanKM,
-			);
-			const loan = calcLoanPayments(
-				leasePrice,
-				DEFAULT_LEASE_RATE,
-				typedItem.term / 12,
-			);
-			total += loan[typedItem.freq];
-		}
-	}
+	const total = await calcCartTotal(cart);
 
 	return c.json({ total }, 200);
 });

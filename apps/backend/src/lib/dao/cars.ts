@@ -193,7 +193,7 @@ export async function getCarInventory(opts?: {
 
 export async function getCarFromInventory(
 	id: string,
-	opts: {
+	opts?: {
 		filters?: {
 			includeOrdered?: boolean;
 		};

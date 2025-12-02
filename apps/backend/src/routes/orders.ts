@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 import { auth } from "@/lib/auth";
-import { createAccessoryOrder, createCarOrder } from "@/lib/dao/orders";
+import {
+	createAccessoryOrder,
+	createCarOrder,
+	createTransaction,
+} from "@/lib/dao/orders";
 import type { Cart, OrderDetails } from "@/lib/types";
 
 const app = new Hono();
@@ -16,13 +20,16 @@ app.post("/", async (c) => {
 		return c.json({ success: false }, 401);
 	}
 
+	const txID = crypto.randomUUID();
+	await createTransaction(txID, cart, { ...details, user: session.user.id });
+
 	for (const item of cart.items) {
 		if (item.itemType === "accessory") {
-			await createAccessoryOrder(item, { ...details, user: session.user.id });
+			await createAccessoryOrder(txID, item);
 			continue;
 		}
 
-		await createCarOrder(item, { ...details, user: session.user.id });
+		await createCarOrder(txID, item);
 	}
 
 	return c.json({ success: true });

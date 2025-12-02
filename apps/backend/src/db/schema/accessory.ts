@@ -6,8 +6,8 @@ import {
 	sqliteTable,
 	text,
 } from "drizzle-orm/sqlite-core";
-import { user } from "./auth";
 import { car } from "./car";
+import { transaction } from "./transaction";
 
 export const ENUM_CAT = [
 	"air fresheners",
@@ -60,25 +60,23 @@ export const accessoryInventory = sqliteTable("accessory_inventory", {
 export const accessoryOrder = sqliteTable(
 	"accessory_order",
 	{
-		cardExpMonth: text("card_exp_month").notNull(),
-		cardExpYear: text("card_exp_year").notNull(),
-		cardLast4: text("card_last4").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
 		inventory: text("inventory")
 			.notNull()
 			.references(() => accessoryInventory.id),
-		shippingAddress: text("shipping_address").notNull(),
-		status: text("status", { enum: ENUM_STATUS }).notNull().default("rented"),
+		status: text("status", { enum: ENUM_STATUS })
+			.notNull()
+			.default("purchased"),
+		tx: text("tx")
+			.notNull()
+			.references(() => transaction.id),
 		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
-		user: text("user")
-			.notNull()
-			.references(() => user.id),
 	},
-	(t) => [primaryKey({ columns: [t.inventory, t.user] })],
+	(t) => [primaryKey({ columns: [t.inventory, t.tx] })],
 );
 
 export const accessoryRelations = relations(accessory, ({ many }) => ({
@@ -109,3 +107,10 @@ export const accessoryInventoryRelations = relations(
 		}),
 	}),
 );
+
+export const accessoryOrderRelations = relations(accessoryOrder, ({ one }) => ({
+	tx: one(transaction, {
+		fields: [accessoryOrder.tx],
+		references: [transaction.id],
+	}),
+}));

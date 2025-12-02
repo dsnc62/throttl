@@ -7,7 +7,7 @@ import {
 	unique,
 	uniqueIndex,
 } from "drizzle-orm/sqlite-core";
-import { user } from "./auth";
+import { transaction } from "./transaction";
 
 export const ENUM_CLASS = [
 	"hatchback",
@@ -132,9 +132,6 @@ export const carInventory = sqliteTable("car_inventory", {
 export const carOrder = sqliteTable(
 	"car_order",
 	{
-		cardExpMonth: text("card_exp_month").notNull(),
-		cardExpYear: text("card_exp_year").notNull(),
-		cardLast4: text("card_last4").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
@@ -146,14 +143,13 @@ export const carOrder = sqliteTable(
 		maxMileage: integer("max_mileage"),
 		orderType: text("order_type", { enum: ENUM_CAR_ORDER_TYPE }).notNull(),
 		ownershipExpiry: integer("ownership_expiry", { mode: "timestamp_ms" }),
-		shippingAddress: text("shipping_address").notNull(),
 		status: text("status", { enum: ENUM_STATUS }).notNull().default("returned"),
+		tx: text("tx")
+			.notNull()
+			.references(() => transaction.id),
 		updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 			.notNull()
 			.default(sql`(current_timestamp)`),
-		user: text("user")
-			.notNull()
-			.references(() => user.id),
 	},
 	(t) => [
 		uniqueIndex("car_order_active_idx")
@@ -181,9 +177,6 @@ export const carPurchaseDetails = sqliteTable("car_purchase_details", {
 	updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 		.notNull()
 		.default(sql`(current_timestamp)`),
-	user: text("user")
-		.notNull()
-		.references(() => user.id),
 });
 
 export const carRelations = relations(car, ({ one, many }) => ({
@@ -202,5 +195,12 @@ export const carInventoryRelations = relations(carInventory, ({ one }) => ({
 	trim: one(carTrim, {
 		fields: [carInventory.trim],
 		references: [carTrim.id],
+	}),
+}));
+
+export const carOrderRelations = relations(carOrder, ({ one }) => ({
+	tx: one(transaction, {
+		fields: [carOrder.tx],
+		references: [transaction.id],
 	}),
 }));

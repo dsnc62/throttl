@@ -43,6 +43,13 @@
       "when": 1764651565930,
       "tag": "0005_sweet_kabuki",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1764700071200,
+      "tag": "0006_previous_chimera",
+      "breakpoints": true
     }
   ]
 }
