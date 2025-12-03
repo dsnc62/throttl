@@ -1,3 +1,5 @@
+import { User } from "better-auth";
+
 export type CarMake = {
 	id: number;
 	name: string;
@@ -168,7 +170,7 @@ export type Transaction = {
 	id: string;
 	cardExpMonth: number;
 	cardExpYear: number;
-	cardLast4: string;
+	cardNumber: string;
 	totalPrice: number;
 	accessoryOrders: {
 		createdAt: Date;
@@ -202,4 +204,15 @@ export type CarPurchaseDetails = {
 	purchaseType: "lease" | "finance" | "cash";
 	rate: number | null;
 	term: number | null;
+};
+
+export type FullUser = User & {
+	role?: string | null;
+	address?: string | null;
+	city?: string | null;
+	postalCode?: string | null;
+	province?: string | null;
+	cardNumber?: string | null;
+	cardExpMonth?: number | null;
+	cardExpYear?: number | null;
 };

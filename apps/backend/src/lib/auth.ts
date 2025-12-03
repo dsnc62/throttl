@@ -15,4 +15,43 @@ export const auth = betterAuth({
 	},
 	plugins: [admin()],
 	trustedOrigins: ["http://localhost:3000"],
+	user: {
+		additionalFields: {
+			address: {
+				input: true,
+				required: false,
+				type: "string",
+			},
+			cardExpMonth: {
+				input: true,
+				required: false,
+				type: "number",
+			},
+			cardExpYear: {
+				input: true,
+				required: false,
+				type: "number",
+			},
+			cardNumber: {
+				input: true,
+				required: false,
+				type: "string",
+			},
+			city: {
+				input: true,
+				required: false,
+				type: "string",
+			},
+			postalCode: {
+				input: true,
+				required: false,
+				type: "string",
+			},
+			province: {
+				input: true,
+				required: false,
+				type: "string",
+			},
+		},
+	},
 });

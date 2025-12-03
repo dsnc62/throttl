@@ -3,7 +3,7 @@ import AuthDropdown from "../auth-dropdown";
 import { ThemeToggle } from "../theme-toggle";
 import { Button } from "../ui/button";
 
-export function ShopNav() {
+export function AdminNav() {
 	const location = useLocation();
 
 	return (

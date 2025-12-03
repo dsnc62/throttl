@@ -24,7 +24,7 @@ export const transaction = sqliteTable("transaction", {
 	address: text("address").notNull(),
 	cardExpMonth: integer("card_exp_month").notNull(),
 	cardExpYear: integer("card_exp_year").notNull(),
-	cardLast4: text("card_last4").notNull(),
+	cardNumber: text("card_number").notNull(),
 	city: text("city").notNull(),
 	createdAt: integer("created_at", { mode: "timestamp_ms" })
 		.notNull()

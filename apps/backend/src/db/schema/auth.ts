@@ -1,10 +1,31 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+const ENUM_TX_PROVINCE = [
+	"AB",
+	"BC",
+	"MB",
+	"NB",
+	"NL",
+	"NT",
+	"NS",
+	"NU",
+	"ON",
+	"PE",
+	"QC",
+	"SK",
+	"YT",
+] as const;
+
 export const user = sqliteTable("user", {
+	address: text("address"),
 	banExpires: integer("ban_expires", { mode: "timestamp_ms" }),
 	banned: integer("banned", { mode: "boolean" }).default(false),
 	banReason: text("ban_reason"),
+	cardExpMonth: integer("card_exp_month"),
+	cardExpYear: integer("card_exp_year"),
+	cardNumber: text("card_number"),
+	city: text("city"),
 	createdAt: integer("created_at", { mode: "timestamp_ms" })
 		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
 		.notNull(),
@@ -15,6 +36,8 @@ export const user = sqliteTable("user", {
 	id: text("id").primaryKey(),
 	image: text("image"),
 	name: text("name").notNull(),
+	postalCode: text("postal_code"),
+	province: text("province", { enum: ENUM_TX_PROVINCE }),
 	role: text("role"),
 	updatedAt: integer("updated_at", { mode: "timestamp_ms" })
 		.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)

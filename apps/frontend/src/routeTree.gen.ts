@@ -11,20 +11,25 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop/index'
 import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
+import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminInventoryRouteImport } from './routes/admin/inventory'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ShopCheckoutIndexRouteImport } from './routes/shop/checkout/index'
 import { Route as ShopCartIndexRouteImport } from './routes/shop/cart/index'
 import { Route as ShopCarsIndexRouteImport } from './routes/shop/cars/index'
 import { Route as ShopAccessoriesIndexRouteImport } from './routes/shop/accessories/index'
+import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
 import { Route as ShopCarsInfoRouteImport } from './routes/shop/cars/info'
 import { Route as ShopAccessoriesInfoRouteImport } from './routes/shop/accessories/info'
+import { Route as AdminUsersInfoRouteImport } from './routes/admin/users/info'
 
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
@@ -34,6 +39,11 @@ const ShopRoute = ShopRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -56,14 +66,24 @@ const ProfileIndexRoute = ProfileIndexRouteImport.update({
   getParentRoute: () => ProfileRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => rootRouteImport,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
   getParentRoute: () => ProfileRoute,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
@@ -95,6 +115,11 @@ const ShopAccessoriesIndexRoute = ShopAccessoriesIndexRouteImport.update({
   path: '/accessories/',
   getParentRoute: () => ShopRoute,
 } as any)
+const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ShopCarsInfoRoute = ShopCarsInfoRouteImport.update({
   id: '/cars/info',
   path: '/cars/info',
@@ -105,19 +130,29 @@ const ShopAccessoriesInfoRoute = ShopAccessoriesInfoRouteImport.update({
   path: '/accessories/info',
   getParentRoute: () => ShopRoute,
 } as any)
+const AdminUsersInfoRoute = AdminUsersInfoRouteImport.update({
+  id: '/users/info',
+  path: '/users/info',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
-  '/admin': typeof AdminIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/shop/': typeof ShopIndexRoute
+  '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/admin/users': typeof AdminUsersIndexRoute
   '/shop/accessories': typeof ShopAccessoriesIndexRoute
   '/shop/cars': typeof ShopCarsIndexRoute
   '/shop/cart': typeof ShopCartIndexRoute
@@ -127,12 +162,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin': typeof AdminIndexRoute
   '/profile': typeof ProfileIndexRoute
   '/shop': typeof ShopIndexRoute
+  '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/admin/users': typeof AdminUsersIndexRoute
   '/shop/accessories': typeof ShopAccessoriesIndexRoute
   '/shop/cars': typeof ShopCarsIndexRoute
   '/shop/cart': typeof ShopCartIndexRoute
@@ -142,16 +181,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/profile': typeof ProfileRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
+  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
   '/profile/': typeof ProfileIndexRoute
   '/shop/': typeof ShopIndexRoute
+  '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/admin/users/': typeof AdminUsersIndexRoute
   '/shop/accessories/': typeof ShopAccessoriesIndexRoute
   '/shop/cars/': typeof ShopCarsIndexRoute
   '/shop/cart/': typeof ShopCartIndexRoute
@@ -161,16 +205,21 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/profile'
     | '/shop'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/inventory'
+    | '/admin/orders'
     | '/profile/orders'
-    | '/admin'
+    | '/admin/'
     | '/profile/'
     | '/shop/'
+    | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/admin/users'
     | '/shop/accessories'
     | '/shop/cars'
     | '/shop/cart'
@@ -180,12 +229,16 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
+    | '/admin/inventory'
+    | '/admin/orders'
     | '/profile/orders'
     | '/admin'
     | '/profile'
     | '/shop'
+    | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/admin/users'
     | '/shop/accessories'
     | '/shop/cars'
     | '/shop/cart'
@@ -194,16 +247,21 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/admin'
     | '/profile'
     | '/shop'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
+    | '/admin/inventory'
+    | '/admin/orders'
     | '/profile/orders'
     | '/admin/'
     | '/profile/'
     | '/shop/'
+    | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/admin/users/'
     | '/shop/accessories/'
     | '/shop/cars/'
     | '/shop/cart/'
@@ -213,9 +271,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   ProfileRoute: typeof ProfileRouteWithChildren
   ShopRoute: typeof ShopRouteWithChildren
-  AdminIndexRoute: typeof AdminIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +290,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -264,10 +329,10 @@ declare module '@tanstack/react-router' {
     }
     '/admin/': {
       id: '/admin/'
-      path: '/admin'
-      fullPath: '/admin'
+      path: '/'
+      fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/profile/orders': {
       id: '/profile/orders'
@@ -275,6 +340,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/profile/orders'
       preLoaderRoute: typeof ProfileOrdersRouteImport
       parentRoute: typeof ProfileRoute
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
@@ -318,6 +397,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopAccessoriesIndexRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/admin/users/': {
+      id: '/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/shop/cars/info': {
       id: '/shop/cars/info'
       path: '/cars/info'
@@ -331,6 +417,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/shop/accessories/info'
       preLoaderRoute: typeof ShopAccessoriesInfoRouteImport
       parentRoute: typeof ShopRoute
+    }
+    '/admin/users/info': {
+      id: '/admin/users/info'
+      path: '/users/info'
+      fullPath: '/admin/users/info'
+      preLoaderRoute: typeof AdminUsersInfoRouteImport
+      parentRoute: typeof AdminRoute
     }
   }
 }
@@ -346,6 +439,24 @@ const AuthRouteChildren: AuthRouteChildren = {
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
+interface AdminRouteChildren {
+  AdminInventoryRoute: typeof AdminInventoryRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminUsersInfoRoute: typeof AdminUsersInfoRoute
+  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminInventoryRoute: AdminInventoryRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  AdminUsersInfoRoute: AdminUsersInfoRoute,
+  AdminUsersIndexRoute: AdminUsersIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface ProfileRouteChildren {
   ProfileOrdersRoute: typeof ProfileOrdersRoute
@@ -385,9 +496,9 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   ProfileRoute: ProfileRouteWithChildren,
   ShopRoute: ShopRouteWithChildren,
-  AdminIndexRoute: AdminIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
