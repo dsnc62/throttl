@@ -1,5 +1,7 @@
+import { Link } from "@tanstack/react-router";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { FullUser } from "@/lib/types";
+import { MoreHorizontalIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -8,9 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontalIcon } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import type { FullUser } from "@/lib/types";
 
 export const columns: ColumnDef<FullUser>[] = [
 	{
@@ -82,7 +82,7 @@ export const columns: ColumnDef<FullUser>[] = [
 							Copy User ID
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
+						<DropdownMenuItem asChild>
 							<Link search={{ id: user.id }} to="/admin/users/info">
 								View User
 							</Link>

@@ -22,13 +22,42 @@ export function AdminNav() {
 				<nav className="flex flex-1 gap-1">
 					<Button
 						asChild
-						variant={location.pathname === "/shop" ? "secondary" : "ghost"}
+						variant={location.pathname === "/admin" ? "secondary" : "ghost"}
 					>
-						<Link to="/shop">Shop</Link>
+						<Link to="/admin">Home</Link>
+					</Button>
+					<Button
+						asChild
+						variant={
+							location.pathname === "/admin/inventory" ? "secondary" : "ghost"
+						}
+					>
+						<Link to="/admin/inventory">Inventory</Link>
+					</Button>
+					<Button
+						asChild
+						variant={
+							location.pathname === "/admin/orders" ? "secondary" : "ghost"
+						}
+					>
+						<Link to="/admin/orders">Orders</Link>
+					</Button>
+					<Button
+						asChild
+						variant={
+							location.pathname.startsWith("/admin/users")
+								? "secondary"
+								: "ghost"
+						}
+					>
+						<Link to="/admin/users">Users</Link>
 					</Button>
 				</nav>
 
 				<section className="flex flex-1 items-center justify-end gap-2">
+					<Button asChild className="h-full" variant="outline">
+						<Link to="/shop">Back to Shop</Link>
+					</Button>
 					<ThemeToggle />
 					<AuthDropdown />
 				</section>
