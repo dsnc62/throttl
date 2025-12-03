@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ShopIndexRouteImport } from './routes/shop/index'
+import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ShopCheckoutIndexRouteImport } from './routes/shop/checkout/index'
@@ -26,6 +29,11 @@ import { Route as ShopAccessoriesInfoRouteImport } from './routes/shop/accessori
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -42,10 +50,20 @@ const ShopIndexRoute = ShopIndexRouteImport.update({
   path: '/',
   getParentRoute: () => ShopRoute,
 } as any)
+const ProfileIndexRoute = ProfileIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProfileRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileOrdersRoute = ProfileOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => ProfileRoute,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
@@ -90,10 +108,13 @@ const ShopAccessoriesInfoRoute = ShopAccessoriesInfoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profile': typeof ProfileRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/admin': typeof AdminIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
@@ -106,7 +127,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/admin': typeof AdminIndexRoute
+  '/profile': typeof ProfileIndexRoute
   '/shop': typeof ShopIndexRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
@@ -119,10 +142,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/profile': typeof ProfileRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
+  '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
+  '/profile/': typeof ProfileIndexRoute
   '/shop/': typeof ShopIndexRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
@@ -135,10 +161,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/profile'
     | '/shop'
     | '/sign-in'
     | '/sign-up'
+    | '/profile/orders'
     | '/admin'
+    | '/profile/'
     | '/shop/'
     | '/shop/accessories/info'
     | '/shop/cars/info'
@@ -151,7 +180,9 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
+    | '/profile/orders'
     | '/admin'
+    | '/profile'
     | '/shop'
     | '/shop/accessories/info'
     | '/shop/cars/info'
@@ -163,10 +194,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_auth'
+    | '/profile'
     | '/shop'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
+    | '/profile/orders'
     | '/admin/'
+    | '/profile/'
     | '/shop/'
     | '/shop/accessories/info'
     | '/shop/cars/info'
@@ -179,6 +213,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
+  ProfileRoute: typeof ProfileRouteWithChildren
   ShopRoute: typeof ShopRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
@@ -190,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -213,12 +255,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopIndexRouteImport
       parentRoute: typeof ShopRoute
     }
+    '/profile/': {
+      id: '/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof ProfileIndexRouteImport
+      parentRoute: typeof ProfileRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/profile/orders': {
+      id: '/profile/orders'
+      path: '/orders'
+      fullPath: '/profile/orders'
+      preLoaderRoute: typeof ProfileOrdersRouteImport
+      parentRoute: typeof ProfileRoute
     }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
@@ -291,6 +347,19 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface ProfileRouteChildren {
+  ProfileOrdersRoute: typeof ProfileOrdersRoute
+  ProfileIndexRoute: typeof ProfileIndexRoute
+}
+
+const ProfileRouteChildren: ProfileRouteChildren = {
+  ProfileOrdersRoute: ProfileOrdersRoute,
+  ProfileIndexRoute: ProfileIndexRoute,
+}
+
+const ProfileRouteWithChildren =
+  ProfileRoute._addFileChildren(ProfileRouteChildren)
+
 interface ShopRouteChildren {
   ShopIndexRoute: typeof ShopIndexRoute
   ShopAccessoriesInfoRoute: typeof ShopAccessoriesInfoRoute
@@ -316,6 +385,7 @@ const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
+  ProfileRoute: ProfileRouteWithChildren,
   ShopRoute: ShopRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }

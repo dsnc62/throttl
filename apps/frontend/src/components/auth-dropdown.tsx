@@ -1,5 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LogOutIcon, ShieldIcon, UserIcon } from "lucide-react";
+import {
+	LogOutIcon,
+	ShieldIcon,
+	ShoppingBagIcon,
+	UserIcon,
+} from "lucide-react";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -77,6 +82,20 @@ export default function AuthDropdown() {
 				<DropdownMenuLabel className="-mt-3 font-normal text-muted-foreground text-xs">
 					{data.user.email}
 				</DropdownMenuLabel>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem asChild>
+					<Link to="/profile">
+						<UserIcon />
+						Profile
+					</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link to="/profile/orders">
+						<ShoppingBagIcon />
+						Orders
+					</Link>
+				</DropdownMenuItem>
+
 				{data.user.role === "admin" && (
 					<>
 						<DropdownMenuSeparator />
