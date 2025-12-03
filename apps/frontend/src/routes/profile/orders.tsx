@@ -86,11 +86,11 @@ function ProfileOrders() {
 										<TableHead>Name</TableHead>
 										<TableHead>Type</TableHead>
 										<TableHead>Status</TableHead>
-										<TableHead className="text-right">Amount</TableHead>
+										<TableHead className="text-right">Price</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{tx.accessoryOrders.map((order) => (
+									{tx.accessoryOrders?.map((order) => (
 										<TableRow key={`acc-order-${order.inventory.id}`}>
 											<TableCell className="font-medium">
 												{order.inventory.id}
@@ -105,7 +105,7 @@ function ProfileOrders() {
 											</TableCell>
 										</TableRow>
 									))}
-									{tx.carOrders.map((order) => {
+									{tx.carOrders?.map((order) => {
 										const car = order.inventory.trim.car;
 										let price: number | undefined;
 

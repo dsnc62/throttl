@@ -85,7 +85,7 @@ function AdminOrders() {
 									<TableHead>Customer Name</TableHead>
 									<TableHead>Customer Email</TableHead>
 									<TableHead>Date</TableHead>
-									<TableHead className="text-right">Total Price</TableHead>
+									<TableHead className="text-right">Amount Paid</TableHead>
 									<TableHead></TableHead>
 								</TableRow>
 							</TableHeader>
@@ -207,7 +207,7 @@ function AdminOrders() {
 																			<TableHead>Type</TableHead>
 																			<TableHead>Status</TableHead>
 																			<TableHead className="text-right">
-																				Amount
+																				Price
 																			</TableHead>
 																		</TableRow>
 																	</TableHeader>
