@@ -1,27 +1,14 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { BoxesIcon, ShoppingCartIcon, UsersIcon } from "lucide-react";
-import AuthWall from "@/components/auth-wall";
-import { authClient } from "@/lib/auth-client";
+import AdminWrapper from "@/components/admin/admin-wrapper";
 
 export const Route = createFileRoute("/admin/")({
 	component: Admin,
 });
 
 function Admin() {
-	const session = authClient.useSession();
-	const navigate = useNavigate({ from: Route.fullPath });
-
-	if (!session.data) {
-		return <AuthWall callbackURL={Route.fullPath} />;
-	}
-
-	if (session.data.user.role !== "admin") {
-		navigate({ to: "/shop" });
-		return null;
-	}
-
 	return (
-		<>
+		<AdminWrapper fullPath={Route.fullPath}>
 			<h1 className="font-display font-semibold text-5xl">Admin Panel</h1>
 			<div className="grid w-full max-w-3xl gap-4 md:grid-cols-3">
 				<Link to="/admin/inventory">
@@ -43,6 +30,6 @@ function Admin() {
 					</div>
 				</Link>
 			</div>
-		</>
+		</AdminWrapper>
 	);
 }

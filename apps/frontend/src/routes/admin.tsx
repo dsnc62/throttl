@@ -9,7 +9,7 @@ function RouteComponent() {
 	return (
 		<>
 			<AdminNav />
-			<main className="flex flex-col gap-6 p-8">
+			<main className="container mx-auto flex flex-col gap-6 px-4 py-8">
 				<Outlet />
 			</main>
 		</>
