@@ -9,7 +9,10 @@ import {
 	createTransaction,
 	getCarPurchaseDetails,
 } from "@/lib/dao/orders";
-import { getUserTransactionsWithOrders } from "@/lib/dao/transactions";
+import {
+	getAllTransactions,
+	getUserTransactions,
+} from "@/lib/dao/transactions";
 import type { Cart, OrderDetails } from "@/lib/types";
 
 const app = new Hono();
@@ -54,7 +57,7 @@ app.get("/users/:id/transactions", async (c) => {
 		return c.json({ success: false }, 403);
 	}
 
-	const transactions = await getUserTransactionsWithOrders(id);
+	const transactions = await getUserTransactions(id);
 	return c.json(transactions);
 });
 
@@ -85,6 +88,23 @@ app.get("/cars/:id/details", async (c) => {
 
 	const details = await getCarPurchaseDetails(id);
 	return c.json(details);
+});
+
+app.get("/transactions", async (c) => {
+	const session = await auth.api.getSession({
+		headers: c.req.raw.headers,
+	});
+
+	if (!session) {
+		return c.json({ success: false }, 401);
+	}
+
+	if (session.user.role !== "admin") {
+		return c.json({ success: false }, 403);
+	}
+
+	const transactions = await getAllTransactions();
+	return c.json(transactions);
 });
 
 export default app;

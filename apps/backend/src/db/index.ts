@@ -2,6 +2,7 @@ import "dotenv/config";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as accessorySchema from "./schema/accessory";
+import * as authSchema from "./schema/auth";
 import * as carSchema from "./schema/car";
 import * as transactionSchema from "./schema/transaction";
 
@@ -11,5 +12,10 @@ const client = createClient({
 });
 export const db = drizzle(client, {
 	casing: "snake_case",
-	schema: { ...accessorySchema, ...carSchema, ...transactionSchema },
+	schema: {
+		...authSchema,
+		...accessorySchema,
+		...carSchema,
+		...transactionSchema,
+	},
 });

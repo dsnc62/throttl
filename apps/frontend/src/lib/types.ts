@@ -172,14 +172,14 @@ export type Transaction = {
 	cardExpYear: number;
 	cardNumber: string;
 	totalPrice: number;
-	accessoryOrders: {
+	accessoryOrders?: {
 		createdAt: Date;
 		inventory: AccessoryInventory;
 		status: "purchased" | "leased" | "rented" | "returned";
 		tx: string;
 		updatedAt: Date;
 	}[];
-	carOrders: {
+	carOrders?: {
 		id: string;
 		createdAt: Date;
 		inventory: CarInventory;
@@ -191,6 +191,13 @@ export type Transaction = {
 		tx: string;
 		updatedAt: Date;
 	}[];
+};
+
+export type AdminTransaction = Transaction & {
+	user: {
+		name: string;
+		email: string;
+	};
 };
 
 export type CarPurchaseDetails = {
