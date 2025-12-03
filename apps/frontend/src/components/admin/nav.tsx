@@ -29,10 +29,18 @@ export function AdminNav() {
 					<Button
 						asChild
 						variant={
-							location.pathname === "/admin/inventory" ? "secondary" : "ghost"
+							location.pathname === "/admin/cars" ? "secondary" : "ghost"
 						}
 					>
-						<Link to="/admin/inventory">Inventory</Link>
+						<Link to="/admin/cars">Cars</Link>
+					</Button>
+					<Button
+						asChild
+						variant={
+							location.pathname === "/admin/accessories" ? "secondary" : "ghost"
+						}
+					>
+						<Link to="/admin/accessories">Accessories</Link>
 					</Button>
 					<Button
 						asChild

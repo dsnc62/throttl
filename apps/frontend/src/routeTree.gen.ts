@@ -19,7 +19,8 @@ import { Route as ProfileIndexRouteImport } from './routes/profile/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as ProfileOrdersRouteImport } from './routes/profile/orders'
 import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
-import { Route as AdminInventoryRouteImport } from './routes/admin/inventory'
+import { Route as AdminCarsRouteImport } from './routes/admin/cars'
+import { Route as AdminAccessoriesRouteImport } from './routes/admin/accessories'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ShopCheckoutIndexRouteImport } from './routes/shop/checkout/index'
@@ -80,9 +81,14 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminInventoryRoute = AdminInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
+const AdminCarsRoute = AdminCarsRouteImport.update({
+  id: '/cars',
+  path: '/cars',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAccessoriesRoute = AdminAccessoriesRouteImport.update({
+  id: '/accessories',
+  path: '/accessories',
   getParentRoute: () => AdminRoute,
 } as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
@@ -143,7 +149,8 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRouteWithChildren
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/accessories': typeof AdminAccessoriesRoute
+  '/admin/cars': typeof AdminCarsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
@@ -162,7 +169,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/accessories': typeof AdminAccessoriesRoute
+  '/admin/cars': typeof AdminCarsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin': typeof AdminIndexRoute
@@ -186,7 +194,8 @@ export interface FileRoutesById {
   '/shop': typeof ShopRouteWithChildren
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/admin/inventory': typeof AdminInventoryRoute
+  '/admin/accessories': typeof AdminAccessoriesRoute
+  '/admin/cars': typeof AdminCarsRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/profile/orders': typeof ProfileOrdersRoute
   '/admin/': typeof AdminIndexRoute
@@ -210,7 +219,8 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sign-in'
     | '/sign-up'
-    | '/admin/inventory'
+    | '/admin/accessories'
+    | '/admin/cars'
     | '/admin/orders'
     | '/profile/orders'
     | '/admin/'
@@ -229,7 +239,8 @@ export interface FileRouteTypes {
     | '/'
     | '/sign-in'
     | '/sign-up'
-    | '/admin/inventory'
+    | '/admin/accessories'
+    | '/admin/cars'
     | '/admin/orders'
     | '/profile/orders'
     | '/admin'
@@ -252,7 +263,8 @@ export interface FileRouteTypes {
     | '/shop'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
-    | '/admin/inventory'
+    | '/admin/accessories'
+    | '/admin/cars'
     | '/admin/orders'
     | '/profile/orders'
     | '/admin/'
@@ -348,11 +360,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/inventory': {
-      id: '/admin/inventory'
-      path: '/inventory'
-      fullPath: '/admin/inventory'
-      preLoaderRoute: typeof AdminInventoryRouteImport
+    '/admin/cars': {
+      id: '/admin/cars'
+      path: '/cars'
+      fullPath: '/admin/cars'
+      preLoaderRoute: typeof AdminCarsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/accessories': {
+      id: '/admin/accessories'
+      path: '/accessories'
+      fullPath: '/admin/accessories'
+      preLoaderRoute: typeof AdminAccessoriesRouteImport
       parentRoute: typeof AdminRoute
     }
     '/_auth/sign-up': {
@@ -441,7 +460,8 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface AdminRouteChildren {
-  AdminInventoryRoute: typeof AdminInventoryRoute
+  AdminAccessoriesRoute: typeof AdminAccessoriesRoute
+  AdminCarsRoute: typeof AdminCarsRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminUsersInfoRoute: typeof AdminUsersInfoRoute
@@ -449,7 +469,8 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminInventoryRoute: AdminInventoryRoute,
+  AdminAccessoriesRoute: AdminAccessoriesRoute,
+  AdminCarsRoute: AdminCarsRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminUsersInfoRoute: AdminUsersInfoRoute,
