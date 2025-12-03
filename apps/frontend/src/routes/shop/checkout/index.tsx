@@ -1,9 +1,11 @@
 import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import z from "zod";
+import AuthWall from "@/components/auth-wall";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,7 +25,6 @@ import {
 import { env } from "@/env";
 import { authClient } from "@/lib/auth-client";
 import type { Cart } from "@/lib/types";
-import { toast } from "sonner";
 
 const checkoutSchema = z
 	.object({
@@ -77,6 +78,7 @@ function ShopCheckout() {
 	// misc. hooks
 	const navigate = useNavigate({ from: Route.fullPath });
 	const session = authClient.useSession();
+	const queryClient = useQueryClient();
 
 	// states
 	const [cart, setCart] = useLocalStorage<Cart>("cart", { items: [] });
@@ -116,14 +118,18 @@ function ShopCheckout() {
 
 			const res = await fetch(`${env.VITE_BACKEND_URL}/api/orders`, {
 				body: JSON.stringify({ cart, details: value }),
+				credentials: "include",
 				headers: { "Content-Type": "application/json" },
 				method: "POST",
 			});
 
 			if (res.ok) {
+				queryClient.invalidateQueries({
+					queryKey: ["orders", "users", session.data.user.id, "transactions"],
+				});
 				toast.success("Thank you for shopping with us!");
 				setCart({ items: [] });
-				navigate({ to: "/shop/cart" });
+				navigate({ to: "/profile/orders" });
 			}
 		},
 		validators: {
@@ -133,30 +139,16 @@ function ShopCheckout() {
 	});
 
 	// effects
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only run once
 	useEffect(() => {
 		if (!cart.items.length) {
 			navigate({ to: "/shop" });
 		}
-	}, [cart.items, navigate]);
-
-	console.log(isLoadingCartTotal);
+	}, []);
 
 	// render
 	if (!session.data) {
-		return (
-			<div className="fixed inset-0 flex items-center justify-center">
-				<div className="rounded-lg bg-background p-6 text-center shadow-lg">
-					<h2 className="mb-4 font-display font-medium text-2xl">
-						You need to be signed in to continue.
-					</h2>
-					<Button asChild>
-						<Link search={{ callbackURL: Route.fullPath }} to="/sign-in">
-							Log In
-						</Link>
-					</Button>
-				</div>
-			</div>
-		);
+		return <AuthWall callbackURL={Route.fullPath} />;
 	}
 
 	return (

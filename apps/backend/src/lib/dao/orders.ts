@@ -1,4 +1,5 @@
 import { addMonths } from "date-fns";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { accessoryOrder } from "@/db/schema/accessory";
 import { carOrder, carPurchaseDetails } from "@/db/schema/car";
@@ -65,7 +66,9 @@ export async function createCarOrder(txID: string, item: BaseCarCartItem) {
 
 	// For purchase types, insert details
 	if (item.orderType !== "rent") {
-		const inv = await getCarFromInventory(item.id);
+		const inv = await getCarFromInventory(item.id, {
+			filters: { includeOrdered: true },
+		});
 		const rate =
 			item.orderType === "finance"
 				? DEFAULT_FINANCE_RATE
@@ -88,6 +91,42 @@ export async function createCarOrder(txID: string, item: BaseCarCartItem) {
 	}
 
 	return { success: true };
+}
+
+export async function getUserTransactionsWithOrders(userId: string) {
+	return await db.query.transaction.findMany({
+		where: eq(transaction.user, userId),
+		with: {
+			accessoryOrders: {
+				with: {
+					inventory: {
+						with: {
+							accessory: true,
+						},
+					},
+				},
+			},
+			carOrders: {
+				with: {
+					inventory: {
+						with: {
+							trim: {
+								with: {
+									car: true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	});
+}
+
+export async function getCarPurchaseDetails(orderId: string) {
+	return await db.query.carPurchaseDetails.findFirst({
+		where: eq(carPurchaseDetails.order, orderId),
+	});
 }
 
 function getOwnershipExpiry(item: BaseCarCartItem): Date | null {

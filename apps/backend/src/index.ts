@@ -28,11 +28,13 @@ app.use(
 	"/api/*",
 	cors({
 		allowHeaders: [
+			"Authorization",
 			"Access-Control-Allow-Credentials",
 			"Access-Control-Allow-Origin",
 			"Content-Type",
 		],
 		allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+		credentials: true,
 		origin,
 	}),
 );

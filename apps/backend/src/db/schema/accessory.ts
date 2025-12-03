@@ -109,6 +109,10 @@ export const accessoryInventoryRelations = relations(
 );
 
 export const accessoryOrderRelations = relations(accessoryOrder, ({ one }) => ({
+	inventory: one(accessoryInventory, {
+		fields: [accessoryOrder.inventory],
+		references: [accessoryInventory.id],
+	}),
 	tx: one(transaction, {
 		fields: [accessoryOrder.tx],
 		references: [transaction.id],

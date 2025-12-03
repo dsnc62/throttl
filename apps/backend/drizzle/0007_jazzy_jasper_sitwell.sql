@@ -1,0 +1,1 @@
+ALTER TABLE `transaction` ADD `created_at` integer DEFAULT (current_timestamp) NOT NULL;

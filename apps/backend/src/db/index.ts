@@ -3,6 +3,7 @@ import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 import * as accessorySchema from "./schema/accessory";
 import * as carSchema from "./schema/car";
+import * as transactionSchema from "./schema/transaction";
 
 const client = createClient({
 	authToken: process.env.DATABASE_AUTH_TOKEN,
@@ -10,5 +11,5 @@ const client = createClient({
 });
 export const db = drizzle(client, {
 	casing: "snake_case",
-	schema: { ...accessorySchema, ...carSchema },
+	schema: { ...accessorySchema, ...carSchema, ...transactionSchema },
 });

@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { accessoryOrder } from "./accessory";
 import { user } from "./auth";
@@ -26,6 +26,9 @@ export const transaction = sqliteTable("transaction", {
 	cardExpYear: integer("card_exp_year").notNull(),
 	cardLast4: text("card_last4").notNull(),
 	city: text("city").notNull(),
+	createdAt: integer("created_at", { mode: "timestamp_ms" })
+		.notNull()
+		.default(sql`(current_timestamp)`),
 	id: text("id").primaryKey(),
 	postalCode: text("postal_code").notNull(),
 	province: text("province", { enum: ENUM_TX_PROVINCE }).notNull(),

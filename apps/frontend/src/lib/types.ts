@@ -143,3 +143,63 @@ export type Cart = {
 		| AccessoryCartItem
 	)[];
 };
+
+/* ORDERS */
+export type Transaction = {
+	user: string;
+	address: string;
+	createdAt: Date;
+	city: string;
+	postalCode: string;
+	province:
+		| "AB"
+		| "BC"
+		| "MB"
+		| "NB"
+		| "NL"
+		| "NT"
+		| "NS"
+		| "NU"
+		| "ON"
+		| "PE"
+		| "QC"
+		| "SK"
+		| "YT";
+	id: string;
+	cardExpMonth: number;
+	cardExpYear: number;
+	cardLast4: string;
+	totalPrice: number;
+	accessoryOrders: {
+		createdAt: Date;
+		inventory: AccessoryInventory;
+		status: "purchased" | "leased" | "rented" | "returned";
+		tx: string;
+		updatedAt: Date;
+	}[];
+	carOrders: {
+		id: string;
+		createdAt: Date;
+		inventory: CarInventory;
+		kmDriven: number | null;
+		maxMileage: number | null;
+		orderType: "purchase" | "rent";
+		ownershipExpiry: Date | null;
+		status: "purchased" | "leased" | "rented" | "returned";
+		tx: string;
+		updatedAt: Date;
+	}[];
+};
+
+export type CarPurchaseDetails = {
+	id: string;
+	createdAt: Date;
+	totalPrice: number;
+	updatedAt: Date;
+	annualKM: number | null;
+	freq: "weekly" | "bi-weekly" | "monthly" | null;
+	order: string;
+	purchaseType: "lease" | "finance" | "cash";
+	rate: number | null;
+	term: number | null;
+};

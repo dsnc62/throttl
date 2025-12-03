@@ -1,8 +1,9 @@
 import { useForm } from "@tanstack/react-form";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { toast } from "sonner";
 import z from "zod";
+import AuthWall from "@/components/auth-wall";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -123,20 +124,7 @@ function Profile() {
 
 	// render
 	if (!session.data) {
-		return (
-			<div className="fixed inset-0 flex items-center justify-center">
-				<div className="rounded-lg bg-background p-6 text-center shadow-lg">
-					<h2 className="mb-4 font-display font-medium text-2xl">
-						You need to be signed in to continue.
-					</h2>
-					<Button asChild>
-						<Link search={{ callbackURL: Route.fullPath }} to="/sign-in">
-							Log In
-						</Link>
-					</Button>
-				</div>
-			</div>
-		);
+		return <AuthWall callbackURL={Route.fullPath} />;
 	}
 
 	return (

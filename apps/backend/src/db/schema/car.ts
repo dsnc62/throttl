@@ -199,8 +199,22 @@ export const carInventoryRelations = relations(carInventory, ({ one }) => ({
 }));
 
 export const carOrderRelations = relations(carOrder, ({ one }) => ({
+	inventory: one(carInventory, {
+		fields: [carOrder.inventory],
+		references: [carInventory.id],
+	}),
 	tx: one(transaction, {
 		fields: [carOrder.tx],
 		references: [transaction.id],
 	}),
 }));
+
+export const carPurchaseDetailsRelations = relations(
+	carPurchaseDetails,
+	({ one }) => ({
+		order: one(carOrder, {
+			fields: [carPurchaseDetails.order],
+			references: [carOrder.id],
+		}),
+	}),
+);
