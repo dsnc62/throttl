@@ -218,7 +218,7 @@ export type FullUser = User & {
 	address?: string | null;
 	city?: string | null;
 	postalCode?: string | null;
-	province?: string | null;
+	province?: Transaction["province"] | null;
 	cardNumber?: string | null;
 	cardExpMonth?: number | null;
 	cardExpYear?: number | null;

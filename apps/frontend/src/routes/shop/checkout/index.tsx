@@ -8,6 +8,7 @@ import z from "zod";
 import AuthWall from "@/components/auth-wall";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Field,
 	FieldError,
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { env } from "@/env";
 import { authClient } from "@/lib/auth-client";
-import type { Cart } from "@/lib/types";
+import type { Cart, FullUser } from "@/lib/types";
 
 const checkoutSchema = z
 	.object({
@@ -51,6 +52,8 @@ const checkoutSchema = z
 			"SK",
 			"YT",
 		] as const),
+		updatePaymentInfo: z.boolean(),
+		updateShippingInfo: z.boolean(),
 	})
 	.superRefine(({ expMonth, expYear }, ctx) => {
 		if (expMonth <= today.getMonth() && expYear <= today.getFullYear()) {
@@ -98,16 +101,19 @@ function ShopCheckout() {
 
 	// form
 	const defaultValues: CheckoutSchema = useMemo(() => {
+		const user: FullUser | undefined = session.data?.user;
 		return {
-			address: "",
-			cardNumber: "",
-			city: "",
+			address: user?.address ?? "",
+			cardNumber: user?.cardNumber ?? "",
+			city: user?.city ?? "",
 			email: session.data?.user.email ?? "",
-			expMonth: today.getMonth() + 1,
-			expYear: today.getFullYear(),
+			expMonth: user?.cardExpMonth ?? today.getMonth() + 1,
+			expYear: user?.cardExpYear ?? today.getFullYear(),
 			name: session.data?.user.name ?? "",
-			postalCode: "",
-			province: "ON",
+			postalCode: user?.postalCode ?? "",
+			province: user?.province ?? "ON",
+			updatePaymentInfo: false,
+			updateShippingInfo: false,
 		};
 	}, [session.data]);
 
@@ -115,6 +121,25 @@ function ShopCheckout() {
 		defaultValues,
 		onSubmit: async ({ value }) => {
 			if (!session.data) return;
+
+			if (value.updateShippingInfo) {
+				await authClient.updateUser({
+					address: value.address.trim(),
+					city: value.city.trim(),
+					postalCode: value.postalCode.trim(),
+					province: value.province,
+					// biome-ignore lint/suspicious/noExplicitAny: additional fields
+				} as any);
+			}
+
+			if (value.updatePaymentInfo) {
+				await authClient.updateUser({
+					cardExpMonth: value.expMonth,
+					cardExpYear: value.expYear,
+					cardNumber: value.cardNumber.trim(),
+					// biome-ignore lint/suspicious/noExplicitAny: additional fields
+				} as any);
+			}
 
 			const res = await fetch(`${env.VITE_BACKEND_URL}/api/orders`, {
 				body: JSON.stringify({ cart, details: value }),
@@ -345,6 +370,37 @@ function ShopCheckout() {
 									);
 								}}
 							</form.Field>
+
+							<form.Field name="updateShippingInfo">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid;
+									return (
+										<Field>
+											<div className="flex items-center gap-3">
+												<Checkbox
+													checked={field.state.value}
+													id={field.name}
+													onBlur={field.handleBlur}
+													onCheckedChange={(v) =>
+														field.handleChange(
+															v === "indeterminate"
+																? defaultValues.updateShippingInfo
+																: v,
+														)
+													}
+												/>
+												<FieldLabel htmlFor={field.name}>
+													Update Default Shipping Address
+												</FieldLabel>
+											</div>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									);
+								}}
+							</form.Field>
 						</FieldGroup>
 					</CardContent>
 				</Card>
@@ -453,6 +509,37 @@ function ShopCheckout() {
 									}}
 								</form.Field>
 							</div>
+
+							<form.Field name="updatePaymentInfo">
+								{(field) => {
+									const isInvalid =
+										field.state.meta.isTouched && !field.state.meta.isValid;
+									return (
+										<Field>
+											<div className="flex items-center gap-3">
+												<Checkbox
+													checked={field.state.value}
+													id={field.name}
+													onBlur={field.handleBlur}
+													onCheckedChange={(v) =>
+														field.handleChange(
+															v === "indeterminate"
+																? defaultValues.updateShippingInfo
+																: v,
+														)
+													}
+												/>
+												<FieldLabel htmlFor={field.name}>
+													Update Default Payment Info
+												</FieldLabel>
+											</div>
+											{isInvalid && (
+												<FieldError errors={field.state.meta.errors} />
+											)}
+										</Field>
+									);
+								}}
+							</form.Field>
 						</FieldGroup>
 					</CardContent>
 				</Card>
