@@ -78,84 +78,85 @@ function ProfileOrders() {
 							<span className="text-muted-foreground">
 								{format(tx.createdAt, "PPp")}
 							</span>
-							<Table>
-								<TableCaption>Reference ID: {tx.id}</TableCaption>
-								<TableHeader>
-									<TableRow>
-										<TableHead className="w-[100px]">ID</TableHead>
-										<TableHead>Name</TableHead>
-										<TableHead>Type</TableHead>
-										<TableHead>Status</TableHead>
-										<TableHead className="text-right">Price</TableHead>
-									</TableRow>
-								</TableHeader>
-								<TableBody>
-									{tx.accessoryOrders?.map((order) => (
-										<TableRow key={`acc-order-${order.inventory.id}`}>
-											<TableCell className="font-medium">
-												{order.inventory.id}
-											</TableCell>
-											<TableCell>{order.inventory.accessory.name}</TableCell>
-											<TableCell>Accessory</TableCell>
-											<TableCell className="capitalize">
-												{order.status}
-											</TableCell>
-											<TableCell className="text-right">
-												{cadFormatter.format(order.inventory.accessory.price)}
-											</TableCell>
+							<div className="mt-2 overflow-hidden rounded-lg border bg-card">
+								<Table>
+									<TableHeader className="bg-background/50">
+										<TableRow>
+											<TableHead className="w-[100px]">ID</TableHead>
+											<TableHead>Name</TableHead>
+											<TableHead>Type</TableHead>
+											<TableHead>Status</TableHead>
+											<TableHead className="text-right">Price</TableHead>
 										</TableRow>
-									))}
-									{tx.carOrders?.map((order) => {
-										const car = order.inventory.trim.car;
-										let price: number | undefined;
-
-										if (order.orderType === "rent") {
-											price = calculateRent(
-												order.inventory.trim.price,
-												differenceInDays(
-													order.ownershipExpiry ?? order.createdAt,
-													order.createdAt,
-												),
-												car.estLifespanKM,
-											);
-										} else {
-											const details = purchaseDetails[order.id];
-											if (details) {
-												price = details.totalPrice;
-											} else {
-												getCarDetails(order.id).then((d) => {
-													if (!d) return;
-													setPurchaseDetails((prev) => ({
-														...prev,
-														[order.id]: d,
-													}));
-
-													price = d.totalPrice;
-												});
-											}
-										}
-
-										return (
-											<TableRow key={`car-order-${order.inventory.id}`}>
+									</TableHeader>
+									<TableBody>
+										{tx.accessoryOrders?.map((order) => (
+											<TableRow key={`acc-order-${order.inventory.id}`}>
 												<TableCell className="font-medium">
 													{order.inventory.id}
 												</TableCell>
-												<TableCell>
-													{car.make.name} {car.model}{" "}
-													{order.inventory.trim.name}
-												</TableCell>
+												<TableCell>{order.inventory.accessory.name}</TableCell>
 												<TableCell>Accessory</TableCell>
 												<TableCell className="capitalize">
 													{order.status}
 												</TableCell>
 												<TableCell className="text-right">
-													{price ? cadFormatter.format(price) : "N/A"}
+													{cadFormatter.format(order.inventory.accessory.price)}
 												</TableCell>
 											</TableRow>
-										);
-									})}
-								</TableBody>
-							</Table>
+										))}
+										{tx.carOrders?.map((order) => {
+											const car = order.inventory.trim.car;
+											let price: number | undefined;
+
+											if (order.orderType === "rent") {
+												price = calculateRent(
+													order.inventory.trim.price,
+													differenceInDays(
+														order.ownershipExpiry ?? order.createdAt,
+														order.createdAt,
+													),
+													car.estLifespanKM,
+												);
+											} else {
+												const details = purchaseDetails[order.id];
+												if (details) {
+													price = details.totalPrice;
+												} else {
+													getCarDetails(order.id).then((d) => {
+														if (!d) return;
+														setPurchaseDetails((prev) => ({
+															...prev,
+															[order.id]: d,
+														}));
+
+														price = d.totalPrice;
+													});
+												}
+											}
+
+											return (
+												<TableRow key={`car-order-${order.inventory.id}`}>
+													<TableCell className="font-medium">
+														{order.inventory.id}
+													</TableCell>
+													<TableCell>
+														{car.make.name} {car.model}{" "}
+														{order.inventory.trim.name}
+													</TableCell>
+													<TableCell>Accessory</TableCell>
+													<TableCell className="capitalize">
+														{order.status}
+													</TableCell>
+													<TableCell className="text-right">
+														{price ? cadFormatter.format(price) : "N/A"}
+													</TableCell>
+												</TableRow>
+											);
+										})}
+									</TableBody>
+								</Table>
+							</div>
 						</div>
 					))}
 				</div>

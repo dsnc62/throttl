@@ -255,11 +255,11 @@ function Profile() {
 	}
 
 	return (
-		<div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
+		<>
 			<h1 className="font-display font-semibold text-5xl">Profile</h1>
 
 			{/* Account Details Form */}
-			<Card className="mb-6">
+			<Card>
 				<CardHeader>
 					<CardTitle>Account Details</CardTitle>
 				</CardHeader>
@@ -404,7 +404,7 @@ function Profile() {
 			</Card>
 
 			{/* Shipping Information Form */}
-			<Card className="mb-6">
+			<Card>
 				<CardHeader>
 					<CardTitle>Shipping Information</CardTitle>
 				</CardHeader>
@@ -545,7 +545,7 @@ function Profile() {
 			</Card>
 
 			{/* Payment Information Form */}
-			<Card className="mb-6">
+			<Card>
 				<CardHeader>
 					<CardTitle>Payment Information</CardTitle>
 				</CardHeader>
@@ -662,6 +662,6 @@ function Profile() {
 					</form>
 				</CardContent>
 			</Card>
-		</div>
+		</>
 	);
 }
