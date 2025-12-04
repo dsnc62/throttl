@@ -1,7 +1,8 @@
-import { eq, ne, not, type SQL } from "drizzle-orm";
+import { eq, ne, type SQL } from "drizzle-orm";
 import { db } from "@/db";
 import {
 	car,
+	carInventory,
 	carOrder,
 	carTrim,
 	type ENUM_CLASS,
@@ -27,7 +28,10 @@ export async function getCarInventory(opts?: {
 		make?: number;
 		size?: string;
 		xwd?: string;
+		rentable?: "true" | "false";
+		purchasable?: "true" | "false";
 		includeOrdered?: boolean;
+		includeUnavailable?: boolean;
 	};
 	limit?: number;
 	offset?: number;
@@ -100,8 +104,10 @@ export async function getCarInventory(opts?: {
 					return fields.id;
 			}
 		},
-		where: (fields, { or, eq, and, exists, inArray }) => {
-			const base = or(fields.purchasable, fields.rentable);
+		where: (fields, { and, eq, exists, inArray, not, or }) => {
+			const base = opts?.filters?.includeUnavailable
+				? undefined
+				: or(fields.purchasable, fields.rentable);
 
 			let orderedFilter: SQL<unknown> | undefined;
 			if (opts?.filters?.includeOrdered !== true) {
@@ -170,9 +176,17 @@ export async function getCarInventory(opts?: {
 			}
 
 			return and(
-				...[base, orderedFilter, idFilter, colorFilter, otherFilters].filter(
-					Boolean,
-				),
+				base,
+				orderedFilter,
+				idFilter,
+				colorFilter,
+				otherFilters,
+				opts?.filters?.purchasable === "false"
+					? eq(fields.purchasable, false)
+					: undefined,
+				opts?.filters?.rentable === "false"
+					? eq(fields.rentable, false)
+					: undefined,
 			);
 		},
 		with: {
@@ -241,4 +255,34 @@ export async function getAllCarManufacturers() {
 		orderBy: (fields) => fields.name,
 	});
 	return all;
+}
+
+export async function updateCarInventory(
+	id: string,
+	updates: {
+		mileage?: number;
+		purchasable?: boolean;
+		rentable?: boolean;
+	},
+) {
+	// Validate mileage if provided
+	if (updates.mileage !== undefined && updates.mileage < 0) {
+		throw new Error("Mileage cannot be negative");
+	}
+
+	// Update the car inventory
+	const result = await db
+		.update(carInventory)
+		.set({
+			...updates,
+			updatedAt: new Date(),
+		})
+		.where(eq(carInventory.id, id))
+		.returning();
+
+	if (result.length === 0) {
+		throw new Error("Car inventory item not found");
+	}
+
+	return result[0];
 }

@@ -27,8 +27,18 @@ export const Route = createFileRoute("/shop/cars/")({
 });
 
 function ShopCars() {
-	const { carClass, color, fuel, make, page, size, sort, xwd } =
-		Route.useSearch();
+	const {
+		carClass,
+		color,
+		fuel,
+		make,
+		page,
+		purchasable,
+		rentable,
+		size,
+		sort,
+		xwd,
+	} = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
 	// queries
@@ -37,6 +47,8 @@ function ShopCars() {
 			const params = new URLSearchParams({
 				limit: "12",
 				offset: `${(page ?? 0) * 12}`,
+				purchasable: purchasable.toString(),
+				rentable: rentable.toString(),
 				...(carClass && { carClass }),
 				...(color && { color }),
 				...(fuel && { fuel }),
@@ -54,6 +66,8 @@ function ShopCars() {
 			"cars",
 			"inventory",
 			`page=${page ?? 0}`,
+			purchasable,
+			rentable,
 			`class=${carClass ?? "all"}`,
 			`color=${color ?? "all"}`,
 			`fuel=${fuel ?? "all"}`,
@@ -76,6 +90,8 @@ function ShopCars() {
 					color,
 					fuel,
 					make,
+					purchasable,
+					rentable,
 					size,
 					sort,
 					xwd,
@@ -83,7 +99,18 @@ function ShopCars() {
 				},
 			});
 		},
-		[carClass, color, fuel, make, navigate, size, sort, xwd],
+		[
+			carClass,
+			color,
+			fuel,
+			make,
+			purchasable,
+			rentable,
+			navigate,
+			size,
+			sort,
+			xwd,
+		],
 	);
 
 	return (
@@ -96,6 +123,8 @@ function ShopCars() {
 					color,
 					fuel,
 					make,
+					purchasable,
+					rentable,
 					size,
 					sort,
 					xwd,
@@ -126,6 +155,8 @@ function ShopCars() {
 								fuel,
 								make,
 								page: (page ?? 1) - 1,
+								purchasable,
+								rentable,
 								size,
 								sort,
 								xwd,
@@ -147,6 +178,8 @@ function ShopCars() {
 								fuel,
 								make,
 								page: (page ?? 0) + 1,
+								purchasable,
+								rentable,
 								size,
 								sort,
 								xwd,

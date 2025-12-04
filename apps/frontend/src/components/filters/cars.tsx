@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { RotateCcwIcon } from "lucide-react";
+import { CheckIcon, RotateCcwIcon, XIcon } from "lucide-react";
 import z from "zod";
 import { env } from "@/env";
 import type { CarMake } from "@/lib/types";
-import { capitalize } from "@/lib/utils";
+import { capitalize, cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import {
 	Select,
@@ -38,6 +38,8 @@ const COLORS = [
 
 export const defaultValues = {
 	page: 0,
+	purchasable: true,
+	rentable: true,
 	sort: "best",
 } as const;
 
@@ -47,6 +49,8 @@ export const carsSearchSchema = z.object({
 	fuel: z.string().optional(),
 	make: z.number().optional(),
 	page: z.number().default(defaultValues.page),
+	purchasable: z.boolean().default(defaultValues.purchasable),
+	rentable: z.boolean().default(defaultValues.rentable),
 	size: z.string().optional(),
 	sort: z.string().default(defaultValues.sort),
 	xwd: z.string().optional(),
@@ -217,6 +221,48 @@ export default function CarsFilter(props: CarsFilterProps) {
 						</SelectGroup>
 					</SelectContent>
 				</Select>
+				<Button
+					onClick={() =>
+						props.onChange?.("purchasable", !props.values.purchasable)
+					}
+					variant={props.values.purchasable ? "default" : "outline"}
+				>
+					<div className="relative size-4">
+						<XIcon
+							className={cn(
+								"absolute top-0 left-0 transition-transform",
+								!props.values.purchasable ? "scale-100" : "scale-0",
+							)}
+						/>
+						<CheckIcon
+							className={cn(
+								"absolute top-0 left-0 transition-transform",
+								props.values.purchasable ? "scale-100" : "scale-0",
+							)}
+						/>
+					</div>
+					Purchasable
+				</Button>
+				<Button
+					onClick={() => props.onChange?.("rentable", !props.values.rentable)}
+					variant={props.values.rentable ? "default" : "outline"}
+				>
+					<div className="relative size-4">
+						<XIcon
+							className={cn(
+								"absolute top-0 left-0 transition-transform",
+								!props.values.rentable ? "scale-100" : "scale-0",
+							)}
+						/>
+						<CheckIcon
+							className={cn(
+								"absolute top-0 left-0 transition-transform",
+								props.values.rentable ? "scale-100" : "scale-0",
+							)}
+						/>
+					</div>
+					Rentable
+				</Button>
 			</div>
 
 			<Select

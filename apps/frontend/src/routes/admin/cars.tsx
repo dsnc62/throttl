@@ -28,16 +28,29 @@ export const Route = createFileRoute("/admin/cars")({
 });
 
 function AdminCars() {
-	const { carClass, color, fuel, make, page, size, sort, xwd } =
-		Route.useSearch();
+	const {
+		carClass,
+		color,
+		fuel,
+		make,
+		page,
+		purchasable,
+		rentable,
+		size,
+		sort,
+		xwd,
+	} = Route.useSearch();
 	const navigate = useNavigate({ from: Route.fullPath });
 
 	// queries
 	const { data, isLoading } = useQuery({
 		queryFn: async () => {
 			const params = new URLSearchParams({
+				includeUnavailable: "true",
 				limit: "12",
 				offset: `${(page ?? 0) * 12}`,
+				purchasable: purchasable.toString(),
+				rentable: rentable.toString(),
 				...(carClass && { carClass }),
 				...(color && { color }),
 				...(fuel && { fuel }),
@@ -55,6 +68,8 @@ function AdminCars() {
 			"cars",
 			"inventory",
 			`page=${page ?? 0}`,
+			purchasable,
+			rentable,
 			`class=${carClass ?? "all"}`,
 			`color=${color ?? "all"}`,
 			`fuel=${fuel ?? "all"}`,
@@ -62,6 +77,7 @@ function AdminCars() {
 			`size=${size ?? "all"}`,
 			`xwd=${xwd ?? "all"}`,
 			`sort=${sort ?? "best"}`,
+			"includeUnavailable",
 		],
 	});
 
@@ -77,6 +93,8 @@ function AdminCars() {
 					color,
 					fuel,
 					make,
+					purchasable,
+					rentable,
 					size,
 					sort,
 					xwd,
@@ -84,7 +102,18 @@ function AdminCars() {
 				},
 			});
 		},
-		[carClass, color, fuel, make, navigate, size, sort, xwd],
+		[
+			carClass,
+			color,
+			fuel,
+			make,
+			purchasable,
+			rentable,
+			navigate,
+			size,
+			sort,
+			xwd,
+		],
 	);
 
 	return (
@@ -97,6 +126,8 @@ function AdminCars() {
 					color,
 					fuel,
 					make,
+					purchasable,
+					rentable,
 					size,
 					sort,
 					xwd,
@@ -126,6 +157,8 @@ function AdminCars() {
 								fuel,
 								make,
 								page: (page ?? 1) - 1,
+								purchasable,
+								rentable,
 								size,
 								sort,
 								xwd,
@@ -147,6 +180,8 @@ function AdminCars() {
 								fuel,
 								make,
 								page: (page ?? 0) + 1,
+								purchasable,
+								rentable,
 								size,
 								sort,
 								xwd,

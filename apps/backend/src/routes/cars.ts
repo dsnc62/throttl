@@ -1,9 +1,13 @@
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+import z from "zod";
+import { auth } from "@/lib/auth";
 import {
 	getAllCarManufacturers,
 	getAllCars,
 	getCarFromInventory,
 	getCarInventory,
+	updateCarInventory,
 } from "@/lib/dao/cars";
 
 const app = new Hono();
@@ -37,5 +41,40 @@ app.get("/manufacturers", async (c) => {
 	const makes = await getAllCarManufacturers();
 	return c.json(makes, 200);
 });
+
+const patchCarInvSchema = z.object({
+	mileage: z.number(),
+	purchasable: z.boolean(),
+	rentable: z.boolean(),
+});
+app.patch(
+	"/inventory/:id",
+	zValidator("json", patchCarInvSchema),
+	async (c) => {
+		const session = await auth.api.getSession({
+			headers: c.req.raw.headers,
+		});
+		if (!session) {
+			return c.json({ error: "Unauthorized" }, 401);
+		}
+
+		if (session.user.role !== "admin") {
+			return c.json({ error: "Admin access required" }, 403);
+		}
+
+		const id = c.req.param("id");
+		const body = await c.req.json<z.infer<typeof patchCarInvSchema>>();
+
+		const existing = await getCarFromInventory(id, {
+			filters: { includeOrdered: true },
+		});
+		if (!existing || existing?.mileage > body.mileage) {
+			return c.text("no", 400);
+		}
+
+		const updatedInventory = await updateCarInventory(id, body);
+		return c.json(updatedInventory, 200);
+	},
+);
 
 export default app;

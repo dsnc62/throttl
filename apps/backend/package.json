@@ -13,6 +13,7 @@
 		"db:seed": "tsx src/db/seed.ts"
 	},
 	"dependencies": {
+		"@hono/zod-validator": "^0.7.5",
 		"@libsql/client": "^0.15.15",
 		"better-auth": "catalog:",
 		"date-fns": "catalog:",
