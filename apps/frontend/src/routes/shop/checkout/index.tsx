@@ -122,6 +122,18 @@ function ShopCheckout() {
 		onSubmit: async ({ value }) => {
 			if (!session.data) return;
 
+			const res = await fetch(`${env.VITE_BACKEND_URL}/api/orders`, {
+				body: JSON.stringify({ cart, details: value }),
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				method: "POST",
+			});
+			if (!res.ok) {
+				const message = await res.text();
+				toast.error(message);
+				return;
+			}
+
 			if (value.updateShippingInfo) {
 				await authClient.updateUser({
 					address: value.address.trim(),
@@ -141,21 +153,12 @@ function ShopCheckout() {
 				} as any);
 			}
 
-			const res = await fetch(`${env.VITE_BACKEND_URL}/api/orders`, {
-				body: JSON.stringify({ cart, details: value }),
-				credentials: "include",
-				headers: { "Content-Type": "application/json" },
-				method: "POST",
+			queryClient.invalidateQueries({
+				queryKey: ["orders", "users", session.data.user.id, "transactions"],
 			});
-
-			if (res.ok) {
-				queryClient.invalidateQueries({
-					queryKey: ["orders", "users", session.data.user.id, "transactions"],
-				});
-				toast.success("Thank you for shopping with us!");
-				setCart({ items: [] });
-				navigate({ to: "/profile/orders" });
-			}
+			toast.success("Thank you for shopping with us!");
+			setCart({ items: [] });
+			navigate({ to: "/profile/orders" });
 		},
 		validators: {
 			onBlur: checkoutSchema,

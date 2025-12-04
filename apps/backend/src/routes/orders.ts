@@ -17,6 +17,21 @@ import type { Cart, OrderDetails } from "@/lib/types";
 
 const app = new Hono();
 
+const VALID_CARD_NUMBERS = [
+	"4242",
+	"4505",
+	"4506",
+	"4510",
+	"4512",
+	"4514",
+	"4519",
+	"4520",
+	"4523",
+	"4526",
+	"4530",
+	"4535",
+];
+
 app.post("/", async (c) => {
 	const { cart, details }: { cart: Cart; details: Omit<OrderDetails, "user"> } =
 		await c.req.json();
@@ -26,6 +41,10 @@ app.post("/", async (c) => {
 	});
 	if (!session) {
 		return c.json({ success: false }, 401);
+	}
+
+	if (!VALID_CARD_NUMBERS.includes(details.cardNumber.slice(0, 5))) {
+		return c.text("Credit Card Authorization Failed", 400);
 	}
 
 	const txID = crypto.randomUUID();
