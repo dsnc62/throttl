@@ -1,1 +1,0 @@
-ALTER TABLE `accessory_inventory` ADD `discarded` integer DEFAULT false;

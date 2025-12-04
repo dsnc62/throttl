@@ -7,15 +7,16 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
-import { Toaster } from "@/components/ui/sonner";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+	errorComponent: () => <div>Error</div>,
 	head: () => ({
 		links: [
 			{
@@ -36,8 +37,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 			},
 		],
 	}),
-
+	notFoundComponent: () => <div>Not found</div>,
 	shellComponent: RootDocument,
+	ssr: false,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {

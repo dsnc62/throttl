@@ -18,6 +18,9 @@ const config = defineConfig({
 		tanstackStart({
 			spa: {
 				enabled: true,
+				prerender: {
+					crawlLinks: true,
+				},
 			},
 		}),
 		viteReact({
