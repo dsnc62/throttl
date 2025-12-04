@@ -7,7 +7,6 @@ import { Spinner } from "@/components/ui/spinner";
 import {
 	Table,
 	TableBody,
-	TableCaption,
 	TableCell,
 	TableHead,
 	TableHeader,
@@ -144,7 +143,7 @@ function ProfileOrders() {
 														{car.make.name} {car.model}{" "}
 														{order.inventory.trim.name}
 													</TableCell>
-													<TableCell>Accessory</TableCell>
+													<TableCell>Car</TableCell>
 													<TableCell className="capitalize">
 														{order.status}
 													</TableCell>

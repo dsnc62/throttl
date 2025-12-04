@@ -28,6 +28,7 @@ import { Route as ShopCartIndexRouteImport } from './routes/shop/cart/index'
 import { Route as ShopCarsIndexRouteImport } from './routes/shop/cars/index'
 import { Route as ShopAccessoriesIndexRouteImport } from './routes/shop/accessories/index'
 import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
+import { Route as ShopCheckoutSuccessRouteImport } from './routes/shop/checkout/success'
 import { Route as ShopCarsInfoRouteImport } from './routes/shop/cars/info'
 import { Route as ShopAccessoriesInfoRouteImport } from './routes/shop/accessories/info'
 import { Route as AdminUsersInfoRouteImport } from './routes/admin/users/info'
@@ -126,6 +127,11 @@ const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
   path: '/users/',
   getParentRoute: () => AdminRoute,
 } as any)
+const ShopCheckoutSuccessRoute = ShopCheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => ShopRoute,
+} as any)
 const ShopCarsInfoRoute = ShopCarsInfoRouteImport.update({
   id: '/cars/info',
   path: '/cars/info',
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/checkout/success': typeof ShopCheckoutSuccessRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/shop/accessories': typeof ShopAccessoriesIndexRoute
   '/shop/cars': typeof ShopCarsIndexRoute
@@ -179,6 +186,7 @@ export interface FileRoutesByTo {
   '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/checkout/success': typeof ShopCheckoutSuccessRoute
   '/admin/users': typeof AdminUsersIndexRoute
   '/shop/accessories': typeof ShopAccessoriesIndexRoute
   '/shop/cars': typeof ShopCarsIndexRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/admin/users/info': typeof AdminUsersInfoRoute
   '/shop/accessories/info': typeof ShopAccessoriesInfoRoute
   '/shop/cars/info': typeof ShopCarsInfoRoute
+  '/shop/checkout/success': typeof ShopCheckoutSuccessRoute
   '/admin/users/': typeof AdminUsersIndexRoute
   '/shop/accessories/': typeof ShopAccessoriesIndexRoute
   '/shop/cars/': typeof ShopCarsIndexRoute
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/shop/checkout/success'
     | '/admin/users'
     | '/shop/accessories'
     | '/shop/cars'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/shop/checkout/success'
     | '/admin/users'
     | '/shop/accessories'
     | '/shop/cars'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/admin/users/info'
     | '/shop/accessories/info'
     | '/shop/cars/info'
+    | '/shop/checkout/success'
     | '/admin/users/'
     | '/shop/accessories/'
     | '/shop/cars/'
@@ -423,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/shop/checkout/success': {
+      id: '/shop/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/shop/checkout/success'
+      preLoaderRoute: typeof ShopCheckoutSuccessRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/shop/cars/info': {
       id: '/shop/cars/info'
       path: '/cars/info'
@@ -496,6 +515,7 @@ interface ShopRouteChildren {
   ShopIndexRoute: typeof ShopIndexRoute
   ShopAccessoriesInfoRoute: typeof ShopAccessoriesInfoRoute
   ShopCarsInfoRoute: typeof ShopCarsInfoRoute
+  ShopCheckoutSuccessRoute: typeof ShopCheckoutSuccessRoute
   ShopAccessoriesIndexRoute: typeof ShopAccessoriesIndexRoute
   ShopCarsIndexRoute: typeof ShopCarsIndexRoute
   ShopCartIndexRoute: typeof ShopCartIndexRoute
@@ -506,6 +526,7 @@ const ShopRouteChildren: ShopRouteChildren = {
   ShopIndexRoute: ShopIndexRoute,
   ShopAccessoriesInfoRoute: ShopAccessoriesInfoRoute,
   ShopCarsInfoRoute: ShopCarsInfoRoute,
+  ShopCheckoutSuccessRoute: ShopCheckoutSuccessRoute,
   ShopAccessoriesIndexRoute: ShopAccessoriesIndexRoute,
   ShopCarsIndexRoute: ShopCarsIndexRoute,
   ShopCartIndexRoute: ShopCartIndexRoute,

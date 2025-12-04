@@ -158,7 +158,10 @@ function ShopCheckout() {
 			});
 			toast.success("Thank you for shopping with us!");
 			setCart({ items: [] });
-			navigate({ to: "/profile/orders" });
+			navigate({
+				search: { id: (await res.json()).id },
+				to: "/shop/checkout/success",
+			});
 		},
 		validators: {
 			onBlur: checkoutSchema,

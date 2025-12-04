@@ -11,6 +11,7 @@ import {
 } from "@/lib/dao/orders";
 import {
 	getAllTransactions,
+	getTransaction,
 	getUserTransactions,
 } from "@/lib/dao/transactions";
 import type { Cart, OrderDetails } from "@/lib/types";
@@ -43,7 +44,7 @@ app.post("/", async (c) => {
 		return c.json({ success: false }, 401);
 	}
 
-	if (!VALID_CARD_NUMBERS.includes(details.cardNumber.slice(0, 5))) {
+	if (!VALID_CARD_NUMBERS.includes(details.cardNumber.slice(0, 4))) {
 		return c.text("Credit Card Authorization Failed", 400);
 	}
 
@@ -59,7 +60,25 @@ app.post("/", async (c) => {
 		await createCarOrder(txID, item);
 	}
 
-	return c.json({ success: true });
+	return c.json({ id: txID as string });
+});
+
+app.get("transactions/:id", async (c) => {
+	const session = await auth.api.getSession({
+		headers: c.req.raw.headers,
+	});
+	if (!session) {
+		return c.json({ success: false }, 401);
+	}
+
+	const { id } = c.req.param();
+
+	if (session.user.id !== id && session.user.role !== "admin") {
+		return c.json({ success: false }, 403);
+	}
+
+	const tx = await getTransaction(id);
+	return c.json(tx);
 });
 
 app.get("/users/:id/transactions", async (c) => {
