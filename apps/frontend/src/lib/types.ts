@@ -1,4 +1,4 @@
-import { User } from "better-auth";
+import type { User } from "better-auth";
 
 export type CarMake = {
 	id: number;

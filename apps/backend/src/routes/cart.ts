@@ -1,20 +1,8 @@
 import { Hono } from "hono";
-import { DEFAULT_FINANCE_RATE, DEFAULT_LEASE_RATE } from "@/lib/constants";
 import { getAccessoriesByIds } from "@/lib/dao/accessories";
 import { getCarInventory } from "@/lib/dao/cars";
-import type {
-	Cart,
-	FinanceCarCartItem,
-	LeaseCarCartItem,
-	RentCarCartItem,
-} from "@/lib/types";
-import {
-	calcCartTotal,
-	calcLeasePrice,
-	calcLoanPayments,
-	calcTotalCarPrice,
-	calculateRent,
-} from "@/lib/utils";
+import type { Cart } from "@/lib/types";
+import { calcCartTotal } from "@/lib/utils";
 
 const app = new Hono();
 
