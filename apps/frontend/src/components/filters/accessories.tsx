@@ -16,11 +16,11 @@ import {
 
 type AccessoriesFilterProps = {
 	onReset?: () => void;
-	onChange?: <T extends keyof Omit<ShopAccessoriesSearchSchema, "page">>(
+	onChange?: <T extends keyof Omit<AccessoriesSearchSchema, "page">>(
 		key: T,
-		value: Omit<ShopAccessoriesSearchSchema, "page">[T] | "all",
+		value: Omit<AccessoriesSearchSchema, "page">[T] | "all",
 	) => void;
-	values: Omit<ShopAccessoriesSearchSchema, "page">;
+	values: Omit<AccessoriesSearchSchema, "page">;
 };
 
 const CATEGORIES = [
@@ -36,16 +36,14 @@ export const defaultValues = {
 	sort: "best",
 } as const;
 
-export const shopAccessoriesSearchSchema = z.object({
+export const accessoriesSearchSchema = z.object({
 	car: z.number().optional(),
 	category: z.string().optional(),
 	make: z.string().optional(),
 	page: z.number().default(defaultValues.page),
 	sort: z.string().default(defaultValues.sort),
 });
-export type ShopAccessoriesSearchSchema = z.infer<
-	typeof shopAccessoriesSearchSchema
->;
+export type AccessoriesSearchSchema = z.infer<typeof accessoriesSearchSchema>;
 
 export default function AccessoriesFilter(props: AccessoriesFilterProps) {
 	const { data: manufacturers } = useQuery({

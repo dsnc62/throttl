@@ -1,8 +1,11 @@
 import type { SQL } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import {
 	accessory,
 	accessoryCarXref,
+	accessoryInventory,
+	accessoryOrder,
 	type ENUM_CAT,
 } from "@/db/schema/accessory";
 
@@ -11,6 +14,7 @@ export async function getAllAccessories(opts?: {
 		car?: number;
 		category?: string;
 		make?: string;
+		include0Qty: "true" | "false";
 	};
 	sort?: `${string}:${"asc" | "desc"}`;
 	limit?: number;
@@ -89,8 +93,13 @@ export async function getAllAccessories(opts?: {
 		},
 		with: {
 			inventories: {
-				where: (fields, { sql }) =>
-					sql`NOT EXISTS (SELECT 1 FROM accessory_order WHERE accessory_order.inventory = ${fields.id} AND accessory_order.status != 'returned')`,
+				where: (fields, { and, eq, sql }) =>
+					and(
+						eq(fields.discarded, false),
+						opts?.filters?.include0Qty
+							? undefined
+							: sql`NOT EXISTS (SELECT 1 FROM accessory_order WHERE accessory_order.inventory = ${fields.id} AND accessory_order.status != 'returned')`,
+					),
 			},
 		},
 	});
@@ -225,4 +234,91 @@ export async function getAccessoriesByIds(ids: number[]) {
 	});
 
 	return accessories;
+}
+
+export async function updateAccessory(id: number, updates: { price: number }) {
+	// Validate price
+	if (updates.price <= 0) {
+		throw new Error("Price must be positive");
+	}
+
+	// Update the accessory
+	const result = await db
+		.update(accessory)
+		.set({
+			price: updates.price,
+		})
+		.where(eq(accessory.id, id))
+		.returning();
+
+	if (result.length === 0) {
+		throw new Error("Accessory not found");
+	}
+
+	return result[0];
+}
+
+export async function createAccessoryInventory(accessoryId: number) {
+	// Check if accessory exists
+	const existingAccessory = await db.query.accessory.findFirst({
+		where: eq(accessory.id, accessoryId),
+	});
+
+	if (!existingAccessory) {
+		throw new Error("Accessory not found");
+	}
+
+	// Create new inventory item
+	const inventoryId = crypto.randomUUID();
+	const result = await db
+		.insert(accessoryInventory)
+		.values({
+			accessory: accessoryId,
+			discarded: false,
+			id: inventoryId,
+		})
+		.returning();
+
+	return result[0];
+}
+
+export async function removeAccessoryInventory(inventoryId: string) {
+	// check if inventory exists and get related orders
+	const inventory = await db.query.accessoryInventory.findFirst({
+		where: eq(accessoryInventory.id, inventoryId),
+	});
+
+	if (!inventory) {
+		return;
+	}
+
+	// check for orders with this inventory
+	const orders = await db.query.accessoryOrder.findMany({
+		where: eq(accessoryOrder.inventory, inventoryId),
+	});
+
+	// check if any orders are purchased (cannot remove)
+	const hasPurchasedOrders = orders.some(
+		(order) => order.status === "purchased",
+	);
+	if (hasPurchasedOrders) {
+		return;
+	}
+
+	// check if any orders are returned (mark as discarded)
+	const hasReturnedOrders = orders.some((order) => order.status === "returned");
+	if (hasReturnedOrders) {
+		await db
+			.update(accessoryInventory)
+			.set({ discarded: true })
+			.where(eq(accessoryInventory.id, inventoryId));
+
+		return { action: "discarded", inventoryId };
+	}
+
+	await db
+		.delete(accessoryInventory)
+		.where(eq(accessoryInventory.id, inventoryId));
+
+	return { action: "removed", inventoryId };
 }

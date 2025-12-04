@@ -54,6 +54,7 @@ export const accessoryInventory = sqliteTable("accessory_inventory", {
 	createdAt: integer("created_at", { mode: "timestamp_ms" })
 		.notNull()
 		.default(sql`(current_timestamp)`),
+	discarded: integer("discarded", { mode: "boolean" }).default(false),
 	id: text("id").primaryKey(),
 });
 

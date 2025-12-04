@@ -1,5 +1,8 @@
 import { useForm } from "@tanstack/react-form";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { z } from "zod";
+import { env } from "@/env";
 import type { CarInventory } from "@/lib/types";
 import { calculateRent, capitalize } from "@/lib/utils";
 import { Badge } from "../ui/badge";
@@ -9,9 +12,6 @@ import { Checkbox } from "../ui/checkbox";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { useQueryClient } from "@tanstack/react-query";
-import { env } from "@/env";
-import { toast } from "sonner";
 
 export default function AdminCarCard({ inv }: { inv: CarInventory }) {
 	const queryClient = useQueryClient();
@@ -60,16 +60,14 @@ export default function AdminCarCard({ inv }: { inv: CarInventory }) {
 
 	return (
 		<Card className="relative flex-row p-2">
-			<div>
-				<img
-					alt={`${car.year} ${car.make.name} ${car.model}`}
-					className="aspect-video w-44 rounded-lg border bg-secondary object-cover"
-					onError={(ev) => {
-						ev.currentTarget.src = "/images/No_car.png";
-					}}
-					src={car.image ?? "/images/No_car.png"}
-				/>
-			</div>
+			<img
+				alt={`${car.year} ${car.make.name} ${car.model}`}
+				className="aspect-video w-44 rounded-lg border bg-secondary object-cover"
+				onError={(ev) => {
+					ev.currentTarget.src = "/images/No_car.png";
+				}}
+				src={car.image ?? "/images/No_car.png"}
+			/>
 			<CardHeader className="flex flex-1 flex-col p-2">
 				<div className="flex w-full items-start justify-between gap-3">
 					<CardTitle className="flex-1">

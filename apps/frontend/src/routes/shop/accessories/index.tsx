@@ -9,9 +9,9 @@ import { FrownIcon } from "lucide-react";
 import { useCallback } from "react";
 import AccessoryCard from "@/components/accessory-card";
 import AccessoriesFilter, {
+	type AccessoriesSearchSchema,
+	accessoriesSearchSchema,
 	defaultValues,
-	type ShopAccessoriesSearchSchema,
-	shopAccessoriesSearchSchema,
 } from "@/components/filters/accessories";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/shop/accessories/")({
 	search: {
 		middlewares: [stripSearchParams(defaultValues)],
 	},
-	validateSearch: shopAccessoriesSearchSchema,
+	validateSearch: accessoriesSearchSchema,
 });
 
 function ShopAccessories() {
@@ -59,9 +59,9 @@ function ShopAccessories() {
 
 	// callbacks
 	const search = useCallback(
-		<T extends keyof Omit<ShopAccessoriesSearchSchema, "page">>(
+		<T extends keyof Omit<AccessoriesSearchSchema, "page">>(
 			key: T,
-			value: Omit<ShopAccessoriesSearchSchema, "page">[T] | "all",
+			value: Omit<AccessoriesSearchSchema, "page">[T] | "all",
 		) => {
 			navigate({
 				search: {

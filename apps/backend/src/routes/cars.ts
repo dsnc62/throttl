@@ -63,7 +63,7 @@ app.patch(
 		}
 
 		const id = c.req.param("id");
-		const body = await c.req.json<z.infer<typeof patchCarInvSchema>>();
+		const body = c.req.valid("json");
 
 		const existing = await getCarFromInventory(id, {
 			filters: { includeOrdered: true },
