@@ -282,7 +282,14 @@ function ShopCarsInfo() {
 				<p className="mb-3 text-2xl italic opacity-80">
 					{data.trim.car.tagline}
 				</p>
-				<div className="mb-6 aspect-video w-full rounded-xl bg-secondary" />
+				<img
+					alt={`${data.trim.car.year} ${data.trim.car.make.name} ${data.trim.car.model}`}
+					className="mb-6 aspect-video w-full rounded-xl border bg-secondary object-cover"
+					onError={(ev) => {
+						ev.currentTarget.src = "/images/No_car.png";
+					}}
+					src={data.trim.car.image ?? "/images/No_car.png"}
+				/>
 
 				<div className="grid @2xl:grid-cols-4 @lg:grid-cols-3 grid-cols-2 gap-3">
 					<StatCard title="Year" value={data.trim.car.year} />

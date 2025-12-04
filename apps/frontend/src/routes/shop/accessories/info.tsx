@@ -147,7 +147,14 @@ function ShopAccessoriesInfo() {
 			<section className="flex-3">
 				<h1 className="font-display font-semibold text-5xl">{data.name}</h1>
 				<p className="mb-3 text-2xl italic opacity-80">by {data.make}</p>
-				<div className="mb-6 aspect-video w-full rounded-xl bg-secondary" />
+				<img
+					alt={`${data.name} by ${data.make}`}
+					className="mb-6 aspect-video w-full rounded-xl border bg-secondary object-cover"
+					onError={(ev) => {
+						ev.currentTarget.src = "/images/Missing-image.png";
+					}}
+					src={data.image ?? "Missing-image.png"}
+				/>
 
 				<div className="grid grid-cols-3 gap-3">
 					<StatCard title="Category" value={capitalize(data.category)} />
