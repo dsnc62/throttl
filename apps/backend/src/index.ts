@@ -8,14 +8,17 @@ import order from "@/routes/orders";
 
 const app = new Hono();
 
-const origin = process.env.DATABASE_URL.includes("http://")
-	? "http://localhost:3000"
-	: "*";
+const origin = ["http://localhost:3000", "https://throttl.vercel.app"];
 
 app.use(
 	"/api/auth/*",
 	cors({
-		allowHeaders: ["Authorization", "Content-Type"],
+		allowHeaders: [
+			"Authorization",
+			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Origin",
+			"Content-Type",
+		],
 		allowMethods: ["POST", "GET", "OPTIONS"],
 		credentials: true,
 		exposeHeaders: ["Content-Length"],

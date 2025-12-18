@@ -6,10 +6,18 @@
 	],
 	"main": "src/index.ts",
 	"name": "throttl-backend",
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true,
+			"persist": true
+		}
+	},
 	"preview_urls": false,
 	"vars": {
-		"BETTER_AUTH_URL": "throttl-backend.mali-kermali-edv4h7p2.workers.dev",
+		"BETTER_AUTH_URL": "https://throttl-backend.mali-kermali-edv4h7p2.workers.dev",
 		"DATABASE_URL": "libsql://main-deltasonic62.aws-us-east-1.turso.io"
 	},
-	"workers_dev": false
+	"workers_dev": true
 }
