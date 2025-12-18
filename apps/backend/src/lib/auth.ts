@@ -5,6 +5,12 @@ import { db } from "../db/index.js";
 import * as authSchema from "../db/schema/auth.js";
 
 export const auth = betterAuth({
+	advanced: {
+		crossSubDomainCookies: {
+			domain: "onrender.com",
+			enabled: true,
+		},
+	},
 	appName: "throttl",
 	database: drizzleAdapter(db, {
 		provider: "sqlite",
@@ -14,7 +20,10 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 	plugins: [admin()],
-	trustedOrigins: ["http://localhost:3000", "https://throttl.vercel.app"],
+	trustedOrigins: [
+		"http://localhost:3000",
+		"https://throttl-frontend.onrender.com",
+	],
 	user: {
 		additionalFields: {
 			address: {
