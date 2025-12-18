@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import { auth } from "./lib/auth.js";
 import accessories from "./routes/accessories.js";
 import cars from "./routes/cars.js";
@@ -10,6 +11,8 @@ import order from "./routes/orders.js";
 const app = new Hono();
 
 const origin = ["http://localhost:3000", "https://throttl.vercel.app"];
+
+app.use(logger());
 
 app.use(
 	"/api/auth/*",
@@ -60,6 +63,9 @@ serve(
 		port: 8787,
 	},
 	(info) => {
-		console.log(`Server is running on http://localhost:${info.port}`);
+		console.log(
+			`Server is running on http://localhost:${info.port} (mode: ${process.env.NODE_ENV})`,
+		);
+		console.log(`BETTER_AUTH_URL=${process.env.BETTER_AUTH_URL ?? "N/A"}`);
 	},
 );
