@@ -7,7 +7,7 @@ import * as authSchema from "../db/schema/auth.js";
 export const auth = betterAuth({
 	advanced: {
 		crossSubDomainCookies: {
-			domain: "onrender.com",
+			domain: "throttl-frontend.onrender.com",
 			enabled: true,
 		},
 	},
