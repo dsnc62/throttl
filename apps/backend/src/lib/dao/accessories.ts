@@ -1,13 +1,13 @@
 import type { SQL } from "drizzle-orm";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { db } from "../../db/index.js";
 import {
 	accessory,
 	accessoryCarXref,
 	accessoryInventory,
 	accessoryOrder,
 	type ENUM_CAT,
-} from "@/db/schema/accessory";
+} from "../../db/schema/accessory.js";
 
 export async function getAllAccessories(opts?: {
 	filters?: {
@@ -182,19 +182,17 @@ export async function getAccessoryCars() {
 	});
 
 	const res: { [make: string]: { id: number; model: string }[] } = {};
-	for (const {
-		car: { id, model, make },
-	} of xrefs) {
-		if (!Object.hasOwn(res, make.name)) {
-			res[make.name] = [{ id, model }];
+	for (const { car } of xrefs) {
+		if (!Object.hasOwn(res, car.make.name)) {
+			res[car.make.name] = [{ id: car.id, model: car.model }];
 			continue;
 		}
 
-		if (res[make.name].some((x) => x.id === id)) {
+		if (res[car.make.name].some((x) => x.id === car.id)) {
 			continue;
 		}
 
-		res[make.name].push({ id, model });
+		res[car.make.name].push({ id: car.id, model: car.model });
 	}
 
 	for (const k of Object.keys(res)) {

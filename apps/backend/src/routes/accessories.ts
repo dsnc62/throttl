@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
-import { auth } from "@/lib/auth";
+import { auth } from "../lib/auth.js";
 import {
 	createAccessoryInventory,
 	getAccessoryById,
@@ -12,7 +12,7 @@ import {
 	getAllAccessories,
 	removeAccessoryInventory,
 	updateAccessory,
-} from "@/lib/dao/accessories";
+} from "../lib/dao/accessories.js";
 
 const app = new Hono();
 

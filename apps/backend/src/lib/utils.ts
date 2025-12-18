@@ -2,15 +2,15 @@ import {
 	CAR_PURCHASE_FEES,
 	DEFAULT_FINANCE_RATE,
 	DEFAULT_LEASE_RATE,
-} from "./constants";
-import { getAccessoriesByIds } from "./dao/accessories";
-import { getCarInventory } from "./dao/cars";
+} from "./constants.js";
+import { getAccessoriesByIds } from "./dao/accessories.js";
+import { getCarInventory } from "./dao/cars.js";
 import type {
 	Cart,
 	FinanceCarCartItem,
 	LeaseCarCartItem,
 	RentCarCartItem,
-} from "./types";
+} from "./types.js";
 
 export function calcTotalCarPrice(
 	initialPrice: number,

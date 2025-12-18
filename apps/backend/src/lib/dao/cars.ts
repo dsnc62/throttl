@@ -1,5 +1,5 @@
 import { eq, ne, type SQL } from "drizzle-orm";
-import { db } from "@/db";
+import { db } from "../../db/index.js";
 import {
 	car,
 	carInventory,
@@ -9,7 +9,7 @@ import {
 	type ENUM_FUEL,
 	type ENUM_SIZE,
 	type ENUM_XWD,
-} from "@/db/schema/car";
+} from "../../db/schema/car.js";
 
 export async function getAllCars() {
 	const allCars = await db.query.car.findMany({

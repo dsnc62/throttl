@@ -21,9 +21,8 @@ pnpm i
 
 ### Environment Variables
 
-The backend directory has `.env` and `.dev.vars` files that need to be created
-and populated. Copy the `.env.example` file to `.env` and `.dev.vars` to get
-started.
+The backend directory has a `.env` file that needs to be created and populated.
+Copy the `.env.example` file to `.env` to get started.
 
 For the frontend directory, copy the `.env.example` file into `.env.local`.
 

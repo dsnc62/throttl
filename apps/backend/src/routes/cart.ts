@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { getAccessoriesByIds } from "@/lib/dao/accessories";
-import { getCarInventory } from "@/lib/dao/cars";
-import type { Cart } from "@/lib/types";
-import { calcCartTotal } from "@/lib/utils";
+import { getAccessoriesByIds } from "../lib/dao/accessories.js";
+import { getCarInventory } from "../lib/dao/cars.js";
+import type { Cart } from "../lib/types.js";
+import { calcCartTotal } from "../lib/utils.js";
 
 const app = new Hono();
 

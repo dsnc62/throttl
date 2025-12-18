@@ -1,4 +1,4 @@
-import { db } from "@/db";
+import { db } from "../../db/index.js";
 
 export async function getTransaction(id: string) {
 	return await db.query.transaction.findFirst({

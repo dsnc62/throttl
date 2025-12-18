@@ -1,8 +1,8 @@
 import { relations, sql } from "drizzle-orm";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { accessoryOrder } from "./accessory";
-import { user } from "./auth";
-import { carOrder } from "./car";
+import { accessoryOrder } from "./accessory.js";
+import { user } from "./auth.js";
+import { carOrder } from "./car.js";
 
 const ENUM_TX_PROVINCE = [
 	"AB",

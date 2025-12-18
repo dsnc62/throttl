@@ -1,10 +1,11 @@
+import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { auth } from "@/lib/auth";
-import accessories from "@/routes/accessories";
-import cars from "@/routes/cars";
-import cart from "@/routes/cart";
-import order from "@/routes/orders";
+import { auth } from "./lib/auth.js";
+import accessories from "./routes/accessories.js";
+import cars from "./routes/cars.js";
+import cart from "./routes/cart.js";
+import order from "./routes/orders.js";
 
 const app = new Hono();
 
@@ -53,4 +54,12 @@ app.route("/api/cars", cars);
 app.route("/api/cart", cart);
 app.route("/api/orders", order);
 
-export default app;
+serve(
+	{
+		fetch: app.fetch,
+		port: 8787,
+	},
+	(info) => {
+		console.log(`Server is running on http://localhost:${info.port}`);
+	},
+);

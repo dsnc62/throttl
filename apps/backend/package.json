@@ -2,9 +2,9 @@
 	"name": "@throttl/backend",
 	"type": "module",
 	"scripts": {
-		"dev": "wrangler dev",
-		"deploy": "wrangler deploy --minify",
-		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
+		"dev": "tsx watch src/index.ts",
+		"build": "tsc",
+		"start": "node dist/src/index.js",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
@@ -13,6 +13,7 @@
 		"db:seed": "tsx src/db/seed.ts"
 	},
 	"dependencies": {
+		"@hono/node-server": "^1.19.6",
 		"@hono/zod-validator": "^0.7.5",
 		"@libsql/client": "^0.15.15",
 		"better-auth": "catalog:",
@@ -27,6 +28,6 @@
 		"@types/node": "catalog:",
 		"drizzle-kit": "^0.31.7",
 		"tsx": "^4.21.0",
-		"wrangler": "^4.51.0"
+		"typescript": "^5.8.3"
 	}
 }

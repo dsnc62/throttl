@@ -1,12 +1,12 @@
 import type { createInsertSchema } from "drizzle-zod";
 import type z from "zod";
-import { db } from ".";
+import { db } from "./index.js";
 import {
 	accessory,
 	accessoryCarXref,
 	accessoryInventory,
-} from "./schema/accessory";
-import { car, carInventory, carManufacturer, carTrim } from "./schema/car";
+} from "./schema/accessory.js";
+import { car, carInventory, carManufacturer, carTrim } from "./schema/car.js";
 
 type Accessory = z.infer<
 	ReturnType<typeof createInsertSchema<typeof accessory>>

@@ -6,8 +6,8 @@ import {
 	sqliteTable,
 	text,
 } from "drizzle-orm/sqlite-core";
-import { car } from "./car";
-import { transaction } from "./transaction";
+import { car } from "./car.js";
+import { transaction } from "./transaction.js";
 
 export const ENUM_CAT = [
 	"air fresheners",

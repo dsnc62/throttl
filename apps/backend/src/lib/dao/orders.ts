@@ -1,10 +1,10 @@
 import { addMonths } from "date-fns";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { accessoryOrder } from "@/db/schema/accessory";
-import { carOrder, carPurchaseDetails } from "@/db/schema/car";
-import { transaction } from "@/db/schema/transaction";
-import { DEFAULT_FINANCE_RATE, DEFAULT_LEASE_RATE } from "../constants";
+import { db } from "../../db/index.js";
+import { accessoryOrder } from "../../db/schema/accessory.js";
+import { carOrder, carPurchaseDetails } from "../../db/schema/car.js";
+import { transaction } from "../../db/schema/transaction.js";
+import { DEFAULT_FINANCE_RATE, DEFAULT_LEASE_RATE } from "../constants.js";
 import type {
 	AccessoryCartItem,
 	BaseCarCartItem,
@@ -12,23 +12,23 @@ import type {
 	LeaseCarCartItem,
 	OrderDetails,
 	RentCarCartItem,
-} from "../types";
-import { calcCartTotal, calcTotalCarPrice } from "../utils";
-import { getAccessoryById } from "./accessories";
-import { getCarFromInventory } from "./cars";
+} from "../types.js";
+import { calcCartTotal, calcTotalCarPrice } from "../utils.js";
+import { getAccessoryById } from "./accessories.js";
+import { getCarFromInventory } from "./cars.js";
 
 export async function createTransaction(
 	txID: string,
 	cart: Cart,
-	details: OrderDetails,
+	{ cardNumber, expMonth, expYear, ...details }: OrderDetails,
 ) {
 	const totalPrice = await calcCartTotal(cart);
 
 	await db.insert(transaction).values({
 		...details,
-		cardExpMonth: details.expMonth,
-		cardExpYear: details.expYear,
-		cardLast4: details.cardNumber.slice(-4),
+		cardExpMonth: expMonth,
+		cardExpYear: expYear,
+		cardNumber: cardNumber.slice(-4),
 		id: txID,
 		totalPrice,
 	});

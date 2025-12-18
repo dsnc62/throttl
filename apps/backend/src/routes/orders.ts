@@ -1,20 +1,20 @@
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
-import { db } from "@/db";
-import { carOrder } from "@/db/schema/car";
-import { auth } from "@/lib/auth";
+import { db } from "../db/index.js";
+import { carOrder } from "../db/schema/car.js";
+import { auth } from "../lib/auth.js";
 import {
 	createAccessoryOrder,
 	createCarOrder,
 	createTransaction,
 	getCarPurchaseDetails,
-} from "@/lib/dao/orders";
+} from "../lib/dao/orders.js";
 import {
 	getAllTransactions,
 	getTransaction,
 	getUserTransactions,
-} from "@/lib/dao/transactions";
-import type { Cart, OrderDetails } from "@/lib/types";
+} from "../lib/dao/transactions.js";
+import type { Cart, OrderDetails } from "../lib/types.js";
 
 const app = new Hono();
 

@@ -7,7 +7,7 @@ import {
 	unique,
 	uniqueIndex,
 } from "drizzle-orm/sqlite-core";
-import { transaction } from "./transaction";
+import { transaction } from "./transaction.js";
 
 export const ENUM_CLASS = [
 	"hatchback",
