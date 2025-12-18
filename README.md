@@ -60,3 +60,13 @@ pnpm run dev:db
 # seed db (only needed for inital run, does not include images)
 cd apps/backend && pnpm run db:seed
 ```
+
+### Testing
+
+```sh
+# you may need to run this before executing
+chmod +x ./apps/backend/run-tests.sh
+
+# run curl tests
+./apps/backend/run-tests.sh
+```

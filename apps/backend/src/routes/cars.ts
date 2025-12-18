@@ -34,6 +34,10 @@ app.get("/inventory", async (c) => {
 app.get("/inventory/:id", async (c) => {
 	const id = c.req.param("id");
 	const car = await getCarFromInventory(id);
+	if (!car) {
+		return c.notFound();
+	}
+
 	return c.json(car, 200);
 });
 

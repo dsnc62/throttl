@@ -20,11 +20,15 @@ app.get("/", async (c) => {
 	const { limit, offset, sort, ...filters } = c.req.query();
 
 	const accessories = await getAllAccessories({
-		filters,
+		filters: {
+			...filters,
+			include0Qty: (filters.include0Qty as "true" | "false") ?? "false",
+		},
 		limit: limit ? Number(limit) : undefined,
 		offset: offset ? Number(offset) : undefined,
 		sort: sort as `${string}:${"asc" | "desc"}`,
 	});
+
 	return c.json(accessories, 200);
 });
 
@@ -51,12 +55,20 @@ app.get("/:id", async (c) => {
 	const id = Number(c.req.param("id"));
 
 	const accessory = await getAccessoryById(id);
+	if (!accessory) {
+		return c.notFound();
+	}
+
 	return c.json(accessory, 200);
 });
 
 app.get("/cars/:id", async (c) => {
 	const id = Number(c.req.param("id"));
 	const car = await getAccessoryCarById(id);
+	if (!car) {
+		return c.notFound();
+	}
+
 	return c.json(car, 200);
 });
 
@@ -69,6 +81,7 @@ app.patch("/:id", zValidator("json", updateAccessorySchema), async (c) => {
 	const session = await auth.api.getSession({
 		headers: c.req.raw.headers,
 	});
+
 	if (!session) {
 		return c.json({ error: "Unauthorized" }, 401);
 	}
