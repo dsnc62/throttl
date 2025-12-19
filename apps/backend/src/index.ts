@@ -10,7 +10,7 @@ import order from "./routes/orders.js";
 
 const app = new Hono();
 
-const origin = ["http://localhost:3000", "https://throttl.onrender.com"];
+const origin = ["http://localhost:3000", "https://throttl.vercel.app"];
 
 app.use(logger());
 

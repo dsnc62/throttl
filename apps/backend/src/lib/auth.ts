@@ -14,7 +14,7 @@ export const auth = betterAuth({
 		enabled: true,
 	},
 	plugins: [admin()],
-	trustedOrigins: ["http://localhost:3000", "https://throttl.onrender.com"],
+	trustedOrigins: ["http://localhost:3000", "https://throttl.vercel.app"],
 	user: {
 		additionalFields: {
 			address: {
