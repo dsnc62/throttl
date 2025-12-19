@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CarIcon, ChevronRightIcon } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
-import { cn } from "@/lib/utils";
+import { env } from "@/env";
 import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -11,6 +13,11 @@ const KEYS = Array.from(Array(22).keys());
 
 function Home() {
 	const session = authClient.useSession();
+	useEffect(() => {
+		fetch(env.VITE_BACKEND_URL).then(async (res) =>
+			console.warn(await res.text()),
+		);
+	}, []);
 
 	return (
 		<main className="flex h-dvh w-screen select-none flex-col items-center justify-between overflow-hidden">

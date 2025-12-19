@@ -5,13 +5,14 @@ import CarCard from "@/components/car-card";
 import { Button } from "@/components/ui/button";
 import { env } from "@/env";
 import type { Accessory, CarInventory } from "@/lib/types";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/shop/")({
 	component: Shop,
 });
 
 function Shop() {
-	const { data: carInventory } = useQuery({
+	const { data: carInventory, isLoading: isLoadingCars } = useQuery({
 		queryFn: async () => {
 			const res = await fetch(
 				`${env.VITE_BACKEND_URL}/api/cars/inventory?limit=6`,
@@ -21,7 +22,7 @@ function Shop() {
 		queryKey: ["cars", "inventory"],
 	});
 
-	const { data: accessories } = useQuery({
+	const { data: accessories, isLoading: isLoadingAccessories } = useQuery({
 		queryFn: async () => {
 			const res = await fetch(
 				`${env.VITE_BACKEND_URL}/api/accessories?limit=6`,
@@ -41,11 +42,17 @@ function Shop() {
 					</Button>
 				</div>
 
-				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					{carInventory?.map((inv) => {
-						return <CarCard inv={inv} key={`car-inv-${inv.id}`} />;
-					})}
-				</div>
+				{carInventory ? (
+					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{carInventory.map((inv) => {
+							return <CarCard inv={inv} key={`car-inv-${inv.id}`} />;
+						})}
+					</div>
+				) : isLoadingCars ? (
+					<Spinner />
+				) : (
+					<span className="font-medium text-4xl">Cars Not Found</span>
+				)}
 			</section>
 
 			<section>
@@ -56,16 +63,22 @@ function Shop() {
 					</Button>
 				</div>
 
-				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					{accessories?.map((accessory) => {
-						return (
-							<AccessoryCard
-								accessory={accessory}
-								key={`acc-${accessory.id}`}
-							/>
-						);
-					})}
-				</div>
+				{accessories ? (
+					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{accessories.map((accessory) => {
+							return (
+								<AccessoryCard
+									accessory={accessory}
+									key={`acc-${accessory.id}`}
+								/>
+							);
+						})}
+					</div>
+				) : isLoadingAccessories ? (
+					<Spinner />
+				) : (
+					<span className="font-medium text-4xl">Accessories Not Found</span>
+				)}
 			</section>
 		</>
 	);
