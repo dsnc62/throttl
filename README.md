@@ -15,6 +15,12 @@ pnpm --version
 # install pnpm (if not already installed)
 npm i -g pnpm
 
+# check if bun is installed
+bun --version
+
+# install bun (if not already installed)
+npm i -g bun
+
 # install dependencies
 pnpm i
 ```
@@ -45,6 +51,7 @@ own projects:
 - Git
 - Node.js v24+
 - pnpm
+- Bun
 - [Turso CLI](https://docs.turso.tech/cli/introduction)
 
 ### Running the Project
