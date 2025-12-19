@@ -5,6 +5,13 @@ import { db } from "../db/index.js";
 import * as authSchema from "../db/schema/auth.js";
 
 export const auth = betterAuth({
+	advanced: {
+		defaultCookieAttributes: {
+			sameSite: "none",
+			secure: true,
+			partitioned: true,
+		},
+	},
 	appName: "throttl",
 	database: drizzleAdapter(db, {
 		provider: "sqlite",
