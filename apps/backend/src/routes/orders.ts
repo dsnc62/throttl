@@ -72,12 +72,14 @@ app.get("transactions/:id", async (c) => {
 	}
 
 	const { id } = c.req.param();
-
-	if (session.user.id !== id && session.user.role !== "admin") {
-		return c.json({ success: false }, 403);
+	const tx = await getTransaction(id);
+	if (!tx) {
+		return c.notFound();
 	}
 
-	const tx = await getTransaction(id);
+	if (session.user.id !== tx.user && session.user.role !== "admin") {
+		return c.json({ success: false }, 403);
+	}
 	return c.json(tx);
 });
 
