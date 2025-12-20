@@ -113,6 +113,7 @@ export default function AuthDropdown() {
 					onClick={async () => {
 						const { error } = await authClient.signOut();
 						if (!error) {
+							window.sessionStorage.clear();
 							toast("Signed out");
 						} else {
 							console.error(error);
