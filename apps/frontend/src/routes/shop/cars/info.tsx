@@ -51,8 +51,8 @@ const today = new Date();
 today.setHours(10, 30, 0, 0);
 
 const defaultValues = {
-	endDate: addDays(today, 1).toISOString(),
-	startDate: today.toISOString(),
+	endDate: addDays(today, 2).toISOString(),
+	startDate: addDays(today, 1).toISOString(),
 };
 
 const shopCarsInfoSearchSchema = z.object({
